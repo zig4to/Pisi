@@ -1,0 +1,222 @@
+// Lucide-slog: 24x24, stroke currentColor, brez polnila.
+import type { SVGProps } from "react";
+
+function Base({ children, ...props }: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-4 w-4"
+      aria-hidden="true"
+      {...props}
+    >
+      {children}
+    </svg>
+  );
+}
+
+export const IconPlus = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M12 5v14M5 12h14" />
+  </Base>
+);
+
+export const IconSearch = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <circle cx="11" cy="11" r="7" />
+    <path d="m21 21-4.3-4.3" />
+  </Base>
+);
+
+export const IconTag = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M12.6 2.6a2 2 0 0 0-1.4-.6H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.2 8.2a2 2 0 0 0 2.8 0l6.8-6.8a2 2 0 0 0 0-2.8Z" />
+    <circle cx="7.5" cy="7.5" r="1.2" />
+  </Base>
+);
+
+export const IconTrash = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m2 0v14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V6" />
+    <path d="M10 11v6M14 11v6" />
+  </Base>
+);
+
+export const IconSettings = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <circle cx="12" cy="12" r="3" />
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.2.62.79 1.05 1.44 1.05H21a2 2 0 0 1 0 4h-.09c-.65 0-1.24.43-1.51 1Z" />
+  </Base>
+);
+
+export const IconChevronRight = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="m9 18 6-6-6-6" />
+  </Base>
+);
+
+export const IconArrowLeft = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M19 12H5M12 19l-7-7 7-7" />
+  </Base>
+);
+
+export const IconChevronDown = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="m6 9 6 6 6-6" />
+  </Base>
+);
+
+export const IconMore = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <circle cx="12" cy="5" r="1" />
+    <circle cx="12" cy="12" r="1" />
+    <circle cx="12" cy="19" r="1" />
+  </Base>
+);
+
+export const IconPin = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M12 17v5M9 10.8V4h6v6.8l2 3.2H7l2-3.2Z" />
+  </Base>
+);
+
+export const IconBook = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5v14Z" />
+    <path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5" />
+  </Base>
+);
+
+export const IconLogout = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
+  </Base>
+);
+
+export const IconImage = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <rect x="3" y="3" width="18" height="18" rx="2" />
+    <circle cx="9" cy="9" r="2" />
+    <path d="m21 15-4.5-4.5L5 21" />
+  </Base>
+);
+
+export const IconBold = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M6 4h7a4 4 0 0 1 0 8H6zM6 12h8a4 4 0 0 1 0 8H6z" />
+  </Base>
+);
+
+export const IconItalic = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M19 4h-9M14 20H5M15 4 9 20" />
+  </Base>
+);
+
+export const IconUnderline = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M6 4v6a6 6 0 0 0 12 0V4M4 21h16" />
+  </Base>
+);
+
+export const IconStrike = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M4 12h16M17.5 7A4 4 0 0 0 14 5h-4a3.5 3.5 0 0 0-1.5 6.5M7 17a3.5 3.5 0 0 0 3 2h4a4 4 0 0 0 3.5-2" />
+  </Base>
+);
+
+export const IconH1 = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M4 6v12M12 6v12M4 12h8M17 18V9l-2 1.5" />
+  </Base>
+);
+
+export const IconH2 = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M4 6v12M11 6v12M4 12h7M15 10a2 2 0 1 1 3.6 1.2L15 18h5" />
+  </Base>
+);
+
+export const IconH3 = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M4 6v12M11 6v12M4 12h7M15 9a2 2 0 1 1 3 2 2 2 0 1 1-3 2" />
+  </Base>
+);
+
+export const IconList = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+  </Base>
+);
+
+export const IconListOrdered = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M10 6h11M10 12h11M10 18h11M4 6h1v4M4 10h2M6 18H4l2-2.5V15a1 1 0 0 0-2 0" />
+  </Base>
+);
+
+export const IconCheckSquare = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="m9 11 3 3L22 4" />
+    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+  </Base>
+);
+
+export const IconQuote = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M3 21c3 0 7-1 7-8V5H3v7h4M14 21c3 0 7-1 7-8V5h-7v7h4" />
+  </Base>
+);
+
+export const IconCode = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="m16 18 6-6-6-6M8 6l-6 6 6 6" />
+  </Base>
+);
+
+export const IconLink = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1.5 1.5M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1.5-1.5" />
+  </Base>
+);
+
+export const IconUndo = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M9 14 4 9l5-5M4 9h11a5 5 0 0 1 0 10h-3" />
+  </Base>
+);
+
+export const IconRedo = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="m15 14 5-5-5-5M20 9H9a5 5 0 0 0 0 10h3" />
+  </Base>
+);
+
+export const IconDownload = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+  </Base>
+);
+
+export const IconMenu = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M4 6h16M4 12h16M4 18h16" />
+  </Base>
+);
+
+export const IconX = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M18 6 6 18M6 6l12 12" />
+  </Base>
+);
+
+export const IconRestore = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5" />
+  </Base>
+);

@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+/* Temni način krmili atribut `data-theme="dark"` na <html> (nastavi ga
+   ThemeScript pred prvim izrisom, glej src/lib/theme.ts). Ta varianta
+   omogoča `dark:` pomožne razrede po celi aplikaciji. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+:root {
+  --background: #f9fafb; /* gray-50 */
+  --foreground: #171717;
+}
+
+[data-theme="dark"] {
+  --background: #030712; /* gray-950 */
+  --foreground: #ededed;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-rubik);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* ===== Urejevalnik strani (Tiptap ProseMirror) ===== */
+.pisi-prose:focus {
+  outline: none;
+}
+.pisi-prose > * + * {
+  margin-top: 0.75em;
+}
+.pisi-prose h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+.pisi-prose h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.pisi-prose h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+.pisi-prose ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+}
+.pisi-prose ol {
+  list-style: decimal;
+  padding-left: 1.5rem;
+}
+.pisi-prose li > p {
+  margin: 0;
+}
+.pisi-prose blockquote {
+  border-left: 3px solid currentColor;
+  opacity: 0.8;
+  padding-left: 1rem;
+  font-style: italic;
+}
+.pisi-prose pre {
+  background: rgba(120, 120, 120, 0.15);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  overflow-x: auto;
+  font-size: 0.875rem;
+}
+.pisi-prose code {
+  background: rgba(120, 120, 120, 0.15);
+  border-radius: 0.25rem;
+  padding: 0.1rem 0.3rem;
+  font-size: 0.875rem;
+}
+.pisi-prose pre code {
+  background: none;
+  padding: 0;
+}
+.pisi-prose a {
+  color: #2563eb;
+  text-decoration: underline;
+}
+[data-theme="dark"] .pisi-prose a {
+  color: #60a5fa;
+}
+.pisi-prose img {
+  border-radius: 0.5rem;
+  max-width: 100%;
+  height: auto;
+}
+.pisi-prose img.ProseMirror-selectednode {
+  outline: 2px solid #3b82f6;
+}
+.pisi-prose ul[data-type="taskList"] {
+  list-style: none;
+  padding-left: 0.25rem;
+}
+.pisi-prose ul[data-type="taskList"] li {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+.pisi-prose ul[data-type="taskList"] li > label {
+  margin-top: 0.15rem;
+}
+.pisi-prose ul[data-type="taskList"] input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+}
+.pisi-prose p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: #9ca3af;
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
