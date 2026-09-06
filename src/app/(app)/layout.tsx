@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { getNotebookTree } from "@/lib/data/notebooks";
 import Sidebar from "@/components/nav/Sidebar";
+import SsoHashCleanup from "@/components/auth/SsoHashCleanup";
 
 export default async function AppLayout({
   children,
@@ -16,6 +17,7 @@ export default async function AppLayout({
 
   return (
     <div className="flex h-screen w-full overflow-hidden">
+      <SsoHashCleanup />
       <Sidebar tree={tree} userEmail={user?.email ?? null} />
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         {children}
