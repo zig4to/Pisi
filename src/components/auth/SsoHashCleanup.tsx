@@ -11,6 +11,10 @@ import { useEffect } from "react";
  */
 export default function SsoHashCleanup() {
   useEffect(() => {
+    // Če je pre-paint skript (glej src/lib/sso.ts) postavil nalagalnik,
+    // ga tu umaknemo — uporabnik je že prijavljen, obrazca ni.
+    document.documentElement.setAttribute("data-sso", "idle");
+
     const raw = window.location.hash.replace(/^#/, "");
     if (raw.indexOf("sb_at=") === -1 && raw.indexOf("sb_rt=") === -1) return;
     const params = new URLSearchParams(raw);
