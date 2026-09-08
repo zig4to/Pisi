@@ -181,7 +181,7 @@ export default function VzletBoard({
                 <span>
                   danes{" "}
                   <span className="font-semibold text-blue-600 dark:text-blue-400">
-                    +{5 + totalToday}
+                    +{5 + totalToday} točk
                   </span>
                   , če dokončaš vse
                 </span>
