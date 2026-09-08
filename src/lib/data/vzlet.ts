@@ -3,6 +3,8 @@ import type {
   Database,
   VzletDay,
   VzletPenaltyItem,
+  VzletSharedTask,
+  VzletSharer,
   VzletTask,
 } from "@/lib/types/database.types";
 
@@ -58,6 +60,67 @@ export async function getPenaltyPool(
     .select("*")
     .order("position", { ascending: true })
     .order("created_at", { ascending: true });
+
+  if (error) throw error;
+  return data ?? [];
+}
+
+/** Ali trenutni uporabnik deli svoje dnevne cilje. */
+export async function getMyVzletSharing(
+  supabase: TypedSupabaseClient
+): Promise<boolean> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return false;
+
+  const { data, error } = await supabase
+    .from("pisi_vzlet_sharing")
+    .select("shared")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data?.shared ?? false;
+}
+
+/** Osebe, ki trenutno delijo svoje cilje (brez trenutnega uporabnika). */
+export async function getVzletSharers(
+  supabase: TypedSupabaseClient
+): Promise<VzletSharer[]> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { data, error } = await supabase
+    .from("pisi_vzlet_sharing")
+    .select("user_id, display_name")
+    .eq("shared", true);
+
+  if (error) throw error;
+  return (data ?? [])
+    .filter((r) => r.user_id !== user?.id)
+    .map((r) => ({
+      userId: r.user_id,
+      name: r.display_name?.trim() || "Uporabnik",
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name, "sl"));
+}
+
+/**
+ * Opravila izbrane osebe, ki deli cilje. RLS omeji nabor na tekoče dni;
+ * klient prikaže samo svoj lokalni „danes“.
+ */
+export async function getVzletSharedTasks(
+  supabase: TypedSupabaseClient,
+  userId: string
+): Promise<VzletSharedTask[]> {
+  const { data, error } = await supabase
+    .from("pisi_vzlet_tasks")
+    .select("id, title, done, is_penalty, for_date")
+    .eq("user_id", userId)
+    .order("done", { ascending: true })
+    .order("position", { ascending: true });
 
   if (error) throw error;
   return data ?? [];

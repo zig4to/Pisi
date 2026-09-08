@@ -1,9 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "@/lib/utils/clsx";
+import {
+  getMyVzletSharingAction,
+  setVzletSharingAction,
+} from "@/actions/vzlet";
 import {
   IconMenu,
   IconRocket,
@@ -18,6 +22,8 @@ export default function VzletMenu() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [introOpen, setIntroOpen] = useState(false);
+  const [shared, setShared] = useState<boolean | null>(null);
+  const [, startShare] = useTransition();
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -42,6 +48,23 @@ export default function VzletMenu() {
     setOpen(false);
   }, [pathname]);
 
+  // trenutno stanje deljenja preberemo ob prvem prikazu menija
+  useEffect(() => {
+    if (!open || shared !== null) return;
+    getMyVzletSharingAction()
+      .then(setShared)
+      .catch(() => setShared(false));
+  }, [open, shared]);
+
+  const toggleShare = () => {
+    const next = !shared;
+    setShared(next);
+    startShare(async () => {
+      const saved = await setVzletSharingAction(next);
+      setShared(saved);
+    });
+  };
+
   const links = [
     { href: "/vzlet", label: "Misije", icon: <IconRocket className="h-4 w-4" /> },
     {
@@ -64,7 +87,7 @@ export default function VzletMenu() {
       </button>
 
       {open && (
-        <div className="absolute right-0 z-30 mt-1 min-w-44 rounded-md border border-gray-200 bg-white p-1 shadow-lg dark:border-gray-700 dark:bg-gray-800 dark:shadow-black/40">
+        <div className="absolute right-0 z-30 mt-1 min-w-52 rounded-md border border-gray-200 bg-white p-1 shadow-lg dark:border-gray-700 dark:bg-gray-800 dark:shadow-black/40">
           {links.map((l) => {
             const active = pathname === l.href;
             return (
@@ -84,6 +107,19 @@ export default function VzletMenu() {
               </Link>
             );
           })}
+
+          <div className="my-1 border-t border-gray-200 dark:border-gray-700" />
+
+          <label className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700">
+            <input
+              type="checkbox"
+              checked={shared === true}
+              disabled={shared === null}
+              onChange={toggleShare}
+              className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900"
+            />
+            Deli moje cilje
+          </label>
 
           <div className="my-1 border-t border-gray-200 dark:border-gray-700" />
 

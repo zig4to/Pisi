@@ -19,6 +19,7 @@ import { IconCheck, IconFlame, IconPlus, IconRocket } from "@/components/ui/icon
 import Fireworks from "@/components/vzlet/Fireworks";
 import Crash from "@/components/vzlet/Crash";
 import VzletPlanDialog from "@/components/vzlet/VzletPlanDialog";
+import OthersGoals from "@/components/vzlet/OthersGoals";
 
 function localDateStr(d: Date): string {
   const y = d.getFullYear();
@@ -137,15 +138,18 @@ export default function VzletBoard({
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 p-6 pt-3">
-        {/* glava — poravnana na vrh; na mobilnem desni odmik za gumb menija */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pr-14 md:pr-0">
+        {/* glava — poravnana na vrh (gumb menija je nad zavihki, ne nad vsebino) */}
+        <div className="flex flex-col gap-3">
           <div className="flex items-center gap-2">
             <IconRocket className="h-6 w-6 text-blue-600 dark:text-blue-400" />
             <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
               Vzlet
             </h1>
+            <div className="ml-auto flex-shrink-0">
+              <OthersGoals />
+            </div>
           </div>
-          <div className="flex flex-shrink-0 gap-2">
+          <div className="flex flex-shrink-0 flex-wrap gap-2">
             <Button variant="secondary" onClick={() => setDialog("today")}>
               <IconPlus />
               Za danes

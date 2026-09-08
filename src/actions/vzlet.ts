@@ -2,7 +2,16 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import {
+  getMyVzletSharing,
+  getVzletSharedTasks,
+  getVzletSharers,
+} from "@/lib/data/vzlet";
 import { dayPoints } from "@/lib/vzlet/score";
+import type {
+  VzletSharedTask,
+  VzletSharer,
+} from "@/lib/types/database.types";
 
 export type VzletFormState = { error?: string };
 
@@ -206,4 +215,49 @@ export async function deletePenaltyPoolAction(id: string): Promise<void> {
   const supabase = await createClient();
   await supabase.from("pisi_vzlet_penalty_pool").delete().eq("id", id);
   revalidatePath("/", "layout");
+}
+
+// ===== Deljenje dnevnih ciljev =====
+
+/** Vklopi/izklopi deljenje. Vrne dejansko shranjeno stanje. */
+export async function setVzletSharingAction(shared: boolean): Promise<boolean> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return false;
+
+  const displayName = (user.email?.split("@")[0] ?? "Uporabnik").slice(0, 60);
+
+  const { error } = await supabase
+    .from("pisi_vzlet_sharing")
+    .upsert(
+      { user_id: user.id, shared, display_name: displayName },
+      { onConflict: "user_id" }
+    );
+  if (error) return !shared;
+
+  revalidatePath("/", "layout");
+  return shared;
+}
+
+/** Trenutno stanje deljenja za prijavljenega uporabnika. */
+export async function getMyVzletSharingAction(): Promise<boolean> {
+  const supabase = await createClient();
+  return getMyVzletSharing(supabase);
+}
+
+/** Osebe, ki trenutno delijo svoje cilje. */
+export async function getVzletSharersAction(): Promise<VzletSharer[]> {
+  const supabase = await createClient();
+  return getVzletSharers(supabase);
+}
+
+/** Cilji izbrane osebe (za pogled „Cilji drugih“). */
+export async function getVzletSharedTasksAction(
+  userId: string
+): Promise<VzletSharedTask[]> {
+  if (!userId) return [];
+  const supabase = await createClient();
+  return getVzletSharedTasks(supabase, userId);
 }

@@ -303,6 +303,27 @@ export type Database = {
           created_at?: string;
         };
       };
+      pisi_vzlet_sharing: {
+        Relationships: [];
+        Row: {
+          user_id: string;
+          shared: boolean;
+          display_name: string;
+          updated_at: string;
+        };
+        Insert: {
+          user_id?: string;
+          shared?: boolean;
+          display_name?: string;
+          updated_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          shared?: boolean;
+          display_name?: string;
+          updated_at?: string;
+        };
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -349,6 +370,18 @@ export type VzletPenaltyItemInsert =
   Database["public"]["Tables"]["pisi_vzlet_penalty_pool"]["Insert"];
 export type VzletPenaltyItemUpdate =
   Database["public"]["Tables"]["pisi_vzlet_penalty_pool"]["Update"];
+
+export type VzletSharing =
+  Database["public"]["Tables"]["pisi_vzlet_sharing"]["Row"];
+
+// Oseba, ki deli svoje dnevne cilje (za dropdown „Cilji drugih“).
+export type VzletSharer = { userId: string; name: string };
+
+// Opravilo druge osebe v pogledu „Cilji drugih“ (samo za branje).
+export type VzletSharedTask = Pick<
+  VzletTask,
+  "id" | "title" | "done" | "is_penalty" | "for_date"
+>;
 
 // ===== Kompoziti za UI =====
 
