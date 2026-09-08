@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import clsx from "@/lib/utils/clsx";
 import type {
   VzletDay,
@@ -13,9 +14,10 @@ import {
   totalPoints,
 } from "@/lib/vzlet/score";
 import { rankForPoints } from "@/lib/vzlet/rank";
-import { IconFlame } from "@/components/ui/icons";
+import { IconFlame, IconRocket } from "@/components/ui/icons";
 import ScoreChart, { type ChartPoint } from "@/components/vzlet/ScoreChart";
 import PenaltyPoolEditor from "@/components/vzlet/PenaltyPoolEditor";
+import IntroDialog from "@/components/vzlet/IntroDialog";
 
 function localDateStr(d: Date): string {
   const y = d.getFullYear();
@@ -40,6 +42,7 @@ export default function VzletProgress({
   tasks: VzletTask[];
   pool: VzletPenaltyItem[];
 }) {
+  const [introOpen, setIntroOpen] = useState(false);
   const todayStr = localDateStr(new Date());
   const todayTasks = tasks.filter(
     (t) => t.for_date === todayStr || (!t.done && t.for_date < todayStr)
@@ -196,6 +199,24 @@ export default function VzletProgress({
       <div className="rounded-xl border border-gray-200 p-4 dark:border-gray-800">
         <PenaltyPoolEditor items={pool} />
       </div>
+
+      {/* predstavitev aplikacije */}
+      <div className="pt-2 text-center">
+        <button
+          type="button"
+          onClick={() => setIntroOpen(true)}
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 transition-colors hover:text-gray-800 hover:underline dark:text-gray-400 dark:hover:text-gray-200"
+        >
+          <IconRocket className="h-4 w-4" />
+          Cilj aplikacije
+        </button>
+      </div>
+
+      <IntroDialog
+        open={introOpen}
+        onClose={() => setIntroOpen(false)}
+        onDismiss={() => setIntroOpen(false)}
+      />
     </div>
   );
 }
