@@ -145,11 +145,8 @@ export default function VzletBoard({
             <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
               Vzlet
             </h1>
-            <div className="ml-auto flex-shrink-0">
-              <OthersGoals />
-            </div>
           </div>
-          <div className="flex flex-shrink-0 flex-wrap gap-2">
+          <div className="flex flex-shrink-0 flex-wrap items-center gap-2">
             <Button variant="secondary" onClick={() => setDialog("today")}>
               <IconPlus />
               Za danes
@@ -158,6 +155,7 @@ export default function VzletBoard({
               <IconPlus />
               Cilji za jutri
             </Button>
+            <OthersGoals />
           </div>
         </div>
 

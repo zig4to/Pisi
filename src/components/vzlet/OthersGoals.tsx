@@ -66,9 +66,14 @@ export default function OthersGoals() {
 
   return (
     <div className="relative" ref={rootRef}>
-      <Button variant="secondary" onClick={toggle} aria-expanded={open}>
-        <IconUsers />
-        Cilji drugih
+      <Button
+        variant="secondary"
+        onClick={toggle}
+        aria-expanded={open}
+        aria-label="Cilji drugih"
+        title="Cilji drugih"
+      >
+        <IconUsers className="h-5 w-5" />
       </Button>
 
       {open && (
