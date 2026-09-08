@@ -166,13 +166,22 @@ export default function VzletBoard({
             <p className="flex flex-wrap items-center gap-x-1 text-sm text-gray-500 dark:text-gray-400">
               <span>{doneToday}/{totalToday} opravljeno</span>
               <span aria-hidden>·</span>
-              <span>
-                danes{" "}
-                <span className="font-semibold text-blue-600 dark:text-blue-400">
-                  +{5 + totalToday}
+              {allDoneToday ? (
+                <span>
+                  danes{" "}
+                  <span className="font-semibold text-blue-600 dark:text-blue-400">
+                    +{5 + totalToday} točk
+                  </span>
                 </span>
-                , če dokončaš vse
-              </span>
+              ) : (
+                <span>
+                  danes{" "}
+                  <span className="font-semibold text-blue-600 dark:text-blue-400">
+                    +{5 + totalToday}
+                  </span>
+                  , če dokončaš vse
+                </span>
+              )}
               {streakNow > 0 && (
                 <span className="inline-flex items-center gap-0.5 text-orange-500 dark:text-orange-400">
                   <span aria-hidden>·</span>

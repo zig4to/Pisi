@@ -89,11 +89,14 @@ export default function IntroDialog({
   return (
     <Modal open={open} onClose={onDismiss ?? onClose} title={current.title}>
       <div className="space-y-4">
-        <div className="flex items-start gap-3 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
-          <span className="mt-0.5 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400">
-            {current.icon}
-          </span>
-          <div className="space-y-2">{current.body}</div>
+        {/* Fiksna višina, da se popup med koraki ne premika. */}
+        <div className="h-56 overflow-y-auto pr-1">
+          <div className="flex items-start gap-3 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+            <span className="mt-0.5 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400">
+              {current.icon}
+            </span>
+            <div className="space-y-2">{current.body}</div>
+          </div>
         </div>
 
         <div className="flex items-center justify-between pt-1">
