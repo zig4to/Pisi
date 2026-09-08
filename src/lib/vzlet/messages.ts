@@ -1,4 +1,4 @@
-// Motivacijska sporočila in slovenska sklanjatev za pogled Dons.
+// Motivacijska sporočila in slovenska sklanjatev za pogled Vzlet.
 
 const PRAISES = [
   "Odlično!",

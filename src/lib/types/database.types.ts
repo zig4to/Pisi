@@ -204,7 +204,7 @@ export type Database = {
           created_at?: string;
         };
       };
-      pisi_dons_tasks: {
+      pisi_vzlet_tasks: {
         Relationships: [];
         Row: {
           id: string;
@@ -268,11 +268,11 @@ export type Tag = Database["public"]["Tables"]["pisi_tags"]["Row"];
 export type TagInsert = Database["public"]["Tables"]["pisi_tags"]["Insert"];
 export type TagUpdate = Database["public"]["Tables"]["pisi_tags"]["Update"];
 
-export type DonsTask = Database["public"]["Tables"]["pisi_dons_tasks"]["Row"];
-export type DonsTaskInsert =
-  Database["public"]["Tables"]["pisi_dons_tasks"]["Insert"];
-export type DonsTaskUpdate =
-  Database["public"]["Tables"]["pisi_dons_tasks"]["Update"];
+export type VzletTask = Database["public"]["Tables"]["pisi_vzlet_tasks"]["Row"];
+export type VzletTaskInsert =
+  Database["public"]["Tables"]["pisi_vzlet_tasks"]["Insert"];
+export type VzletTaskUpdate =
+  Database["public"]["Tables"]["pisi_vzlet_tasks"]["Update"];
 
 // ===== Kompoziti za UI =====
 

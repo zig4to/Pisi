@@ -5,26 +5,26 @@ import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { IconPlus, IconTrash } from "@/components/ui/icons";
-import type { DonsTask } from "@/lib/types/database.types";
+import type { VzletTask } from "@/lib/types/database.types";
 import clsx from "@/lib/utils/clsx";
 
-type DonsPlanDialogProps = {
+type VzletPlanDialogProps = {
   open: boolean;
   onClose: () => void;
   mode: "today" | "tomorrow";
-  tasks: DonsTask[];
+  tasks: VzletTask[];
   onAdd: (title: string) => Promise<{ error?: string }>;
   onDelete: (id: string) => void;
 };
 
-export default function DonsPlanDialog({
+export default function VzletPlanDialog({
   open,
   onClose,
   mode,
   tasks,
   onAdd,
   onDelete,
-}: DonsPlanDialogProps) {
+}: VzletPlanDialogProps) {
   const [value, setValue] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();

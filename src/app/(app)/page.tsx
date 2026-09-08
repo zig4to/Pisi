@@ -3,7 +3,7 @@ import { IconBook, IconRocket } from "@/components/ui/icons";
 
 // Začetna stran aplikacije. Stranski meni (beležke) je vedno na voljo prek
 // postavitve `(app)/layout.tsx`. Tu ponudimo kratko predstavitev in dve
-// glavni poti: Beležke in Dons.
+// glavni poti: Beležke in Vzlet.
 export default function HomePage() {
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-6 py-12">
@@ -68,14 +68,14 @@ export default function HomePage() {
           </Link>
 
           <Link
-            href="/dons"
+            href="/vzlet"
             className="group flex flex-col items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-5 text-center transition-colors hover:border-blue-300 hover:bg-blue-50 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-blue-800 dark:hover:bg-blue-950"
           >
             <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-200">
               <IconRocket className="h-5 w-5" />
             </span>
             <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-              Dons
+              Vzlet
             </span>
             <span className="text-xs text-gray-500 dark:text-gray-400">
               Najpomembnejše za danes

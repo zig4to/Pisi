@@ -2,21 +2,21 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import clsx from "@/lib/utils/clsx";
-import type { DonsTask } from "@/lib/types/database.types";
+import type { VzletTask } from "@/lib/types/database.types";
 import {
-  addDonsTaskAction,
-  deleteDonsTaskAction,
-  renameDonsTaskAction,
-  rolloverDonsTasksAction,
-  toggleDonsTaskAction,
-} from "@/actions/dons";
-import { celebrationMessage, pluralOpravki } from "@/lib/dons/messages";
+  addVzletTaskAction,
+  deleteVzletTaskAction,
+  renameVzletTaskAction,
+  rolloverVzletTasksAction,
+  toggleVzletTaskAction,
+} from "@/actions/vzlet";
+import { celebrationMessage, pluralOpravki } from "@/lib/vzlet/messages";
 import Button from "@/components/ui/Button";
 import Menu, { MenuItem } from "@/components/ui/Menu";
 import PromptDialog from "@/components/ui/PromptDialog";
 import { IconCheck, IconPlus, IconRocket } from "@/components/ui/icons";
-import Fireworks from "@/components/dons/Fireworks";
-import DonsPlanDialog from "@/components/dons/DonsPlanDialog";
+import Fireworks from "@/components/vzlet/Fireworks";
+import VzletPlanDialog from "@/components/vzlet/VzletPlanDialog";
 
 function localDateStr(d: Date): string {
   const y = d.getFullYear();
@@ -25,8 +25,12 @@ function localDateStr(d: Date): string {
   return `${y}-${m}-${day}`;
 }
 
-export default function DonsBoard({ tasks: initialTasks }: { tasks: DonsTask[] }) {
-  const [tasks, setTasks] = useState<DonsTask[]>(initialTasks);
+export default function VzletBoard({
+  tasks: initialTasks,
+}: {
+  tasks: VzletTask[];
+}) {
+  const [tasks, setTasks] = useState<VzletTask[]>(initialTasks);
   const [dialog, setDialog] = useState<"today" | "tomorrow" | null>(null);
   const [rename, setRename] = useState<{ id: string; value: string } | null>(
     null
@@ -61,7 +65,7 @@ export default function DonsBoard({ tasks: initialTasks }: { tasks: DonsTask[] }
     if (rolledRef.current) return;
     if (tasks.some((t) => !t.done && t.for_date < todayStr)) {
       rolledRef.current = true;
-      startTransition(() => rolloverDonsTasksAction(todayStr));
+      startTransition(() => rolloverVzletTasksAction(todayStr));
     }
   }, [tasks, todayStr, startTransition]);
 
@@ -82,7 +86,7 @@ export default function DonsBoard({ tasks: initialTasks }: { tasks: DonsTask[] }
   const doneToday = todayTasks.filter((t) => t.done).length;
   const remaining = totalToday - doneToday;
 
-  const toggle = (task: DonsTask) => {
+  const toggle = (task: VzletTask) => {
     const next = !task.done;
     setTasks((prev) =>
       prev.map((t) =>
@@ -95,7 +99,7 @@ export default function DonsBoard({ tasks: initialTasks }: { tasks: DonsTask[] }
           : t
       )
     );
-    startTransition(() => toggleDonsTaskAction(task.id, next));
+    startTransition(() => toggleVzletTaskAction(task.id, next));
 
     if (next) {
       const newRemaining = Math.max(0, remaining - 1);
@@ -111,7 +115,7 @@ export default function DonsBoard({ tasks: initialTasks }: { tasks: DonsTask[] }
 
   const handleDelete = (id: string) => {
     setTasks((prev) => prev.filter((t) => t.id !== id));
-    startTransition(() => deleteDonsTaskAction(id));
+    startTransition(() => deleteVzletTaskAction(id));
   };
 
   const progressLine =
@@ -129,7 +133,7 @@ export default function DonsBoard({ tasks: initialTasks }: { tasks: DonsTask[] }
           <div className="flex items-center gap-2">
             <IconRocket className="h-6 w-6 text-blue-600 dark:text-blue-400" />
             <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-              Dons
+              Vzlet
             </h1>
           </div>
           <div className="flex flex-shrink-0 gap-2">
@@ -265,27 +269,27 @@ export default function DonsBoard({ tasks: initialTasks }: { tasks: DonsTask[] }
           <div
             role="status"
             aria-live="polite"
-            className="dons-fire-border max-w-full rounded-xl border-2 border-orange-400 bg-white px-6 py-4 text-center text-lg font-semibold text-gray-900 shadow-2xl dark:bg-gray-900 dark:text-gray-100"
+            className="vzlet-fire-border max-w-full rounded-xl border-2 border-orange-400 bg-white px-6 py-4 text-center text-lg font-semibold text-gray-900 shadow-2xl dark:bg-gray-900 dark:text-gray-100"
           >
             {toast.text}
           </div>
         </div>
       )}
 
-      <DonsPlanDialog
+      <VzletPlanDialog
         open={dialog === "tomorrow"}
         onClose={() => setDialog(null)}
         mode="tomorrow"
         tasks={tomorrowTasks}
-        onAdd={(title) => addDonsTaskAction(title, tomorrowStr)}
+        onAdd={(title) => addVzletTaskAction(title, tomorrowStr)}
         onDelete={handleDelete}
       />
-      <DonsPlanDialog
+      <VzletPlanDialog
         open={dialog === "today"}
         onClose={() => setDialog(null)}
         mode="today"
         tasks={todayTasks}
-        onAdd={(title) => addDonsTaskAction(title, todayStr)}
+        onAdd={(title) => addVzletTaskAction(title, todayStr)}
         onDelete={handleDelete}
       />
       <PromptDialog
@@ -295,7 +299,7 @@ export default function DonsBoard({ tasks: initialTasks }: { tasks: DonsTask[] }
         label="Opravilo"
         initialValue={rename?.value ?? ""}
         onSubmit={async (value) => {
-          if (rename) await renameDonsTaskAction(rename.id, value);
+          if (rename) await renameVzletTaskAction(rename.id, value);
         }}
       />
     </div>
