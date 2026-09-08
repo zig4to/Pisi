@@ -2,15 +2,16 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { dayPoints } from "@/lib/vzlet/score";
 
 export type VzletFormState = { error?: string };
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const MAX_PENALTY_PER_SETTLE = 5;
 
-async function nextVzletPosition(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  forDate: string
-): Promise<number> {
+type Supa = Awaited<ReturnType<typeof createClient>>;
+
+async function nextVzletPosition(supabase: Supa, forDate: string): Promise<number> {
   const { data } = await supabase
     .from("pisi_vzlet_tasks")
     .select("position")
@@ -74,17 +75,135 @@ export async function deleteVzletTaskAction(id: string): Promise<void> {
   revalidatePath("/", "layout");
 }
 
+function pickPenalties(titles: string[], count: number): string[] {
+  if (titles.length === 0) return [];
+  const shuffled = [...titles].sort(() => Math.random() - 0.5);
+  const out: string[] = [];
+  for (let i = 0; i < count; i++) out.push(shuffled[i % shuffled.length]);
+  return out;
+}
+
 /**
- * Prenese neopravljena opravila iz preteklih dni na `todayStr` (lokalni „danes“
- * z odjemalca). RLS omeji spremembo na trenutnega uporabnika.
+ * Zaključi pretekle dneve: zapiše točke v `pisi_vzlet_days`, za zamujene dneve
+ * doda kazenska opravila iz bazena, nato prenese neopravljena na `todayStr`.
+ * Idempotentno — že zaključeni dnevi se preskočijo.
  */
-export async function rolloverVzletTasksAction(todayStr: string): Promise<void> {
-  if (!DATE_RE.test(todayStr)) return;
+export async function settleVzletAction(
+  todayStr: string
+): Promise<{ missedDays: number; penaltyAdded: number }> {
+  if (!DATE_RE.test(todayStr)) return { missedDays: 0, penaltyAdded: 0 };
   const supabase = await createClient();
+
+  const [{ data: pastTasks }, { data: settledDays }] = await Promise.all([
+    supabase
+      .from("pisi_vzlet_tasks")
+      .select("for_date, done")
+      .lt("for_date", todayStr),
+    supabase.from("pisi_vzlet_days").select("day").lt("day", todayStr),
+  ]);
+
+  const byDay = new Map<string, { total: number; done: number }>();
+  for (const t of pastTasks ?? []) {
+    const e = byDay.get(t.for_date) ?? { total: 0, done: 0 };
+    e.total += 1;
+    if (t.done) e.done += 1;
+    byDay.set(t.for_date, e);
+  }
+  const already = new Set((settledDays ?? []).map((d) => d.day));
+
+  const rows: {
+    day: string;
+    points: number;
+    tasks_total: number;
+    tasks_done: number;
+    all_done: boolean;
+  }[] = [];
+  let missedDays = 0;
+  for (const [day, { total, done }] of byDay) {
+    if (total < 1 || already.has(day)) continue;
+    const allDone = done === total;
+    const points = dayPoints(total, done);
+    rows.push({
+      day,
+      points,
+      tasks_total: total,
+      tasks_done: done,
+      all_done: allDone,
+    });
+    if (points < 0) missedDays += 1;
+  }
+
+  if (rows.length > 0) {
+    await supabase.from("pisi_vzlet_days").insert(rows);
+  }
+
+  // Kazenska opravila za zamujene dneve.
+  let penaltyAdded = 0;
+  if (missedDays > 0) {
+    const { data: pool } = await supabase
+      .from("pisi_vzlet_penalty_pool")
+      .select("title");
+    const titles = pickPenalties(
+      (pool ?? []).map((p) => p.title),
+      Math.min(missedDays, MAX_PENALTY_PER_SETTLE)
+    );
+    if (titles.length > 0) {
+      const base = await nextVzletPosition(supabase, todayStr);
+      await supabase.from("pisi_vzlet_tasks").insert(
+        titles.map((title, i) => ({
+          title,
+          for_date: todayStr,
+          is_penalty: true,
+          position: base + i,
+        }))
+      );
+      penaltyAdded = titles.length;
+    }
+  }
+
+  // Prenos neopravljenih preteklih opravil na danes.
   await supabase
     .from("pisi_vzlet_tasks")
     .update({ for_date: todayStr })
     .eq("done", false)
     .lt("for_date", todayStr);
+
+  revalidatePath("/", "layout");
+  return { missedDays, penaltyAdded };
+}
+
+// ===== Kazenski seznam (pool) =====
+
+async function nextPenaltyPoolPosition(supabase: Supa): Promise<number> {
+  const { data } = await supabase
+    .from("pisi_vzlet_penalty_pool")
+    .select("position")
+    .order("position", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return (data?.position ?? 0) + 1;
+}
+
+export async function addPenaltyPoolAction(
+  _prevState: VzletFormState,
+  formData: FormData
+): Promise<VzletFormState> {
+  const clean = String(formData.get("title") ?? "").trim();
+  if (!clean) return { error: "Vnos ne sme biti prazen." };
+
+  const supabase = await createClient();
+  const position = await nextPenaltyPoolPosition(supabase);
+  const { error } = await supabase
+    .from("pisi_vzlet_penalty_pool")
+    .insert({ title: clean.slice(0, 500), position });
+
+  if (error) return { error: "Napaka pri dodajanju: " + error.message };
+  revalidatePath("/", "layout");
+  return {};
+}
+
+export async function deletePenaltyPoolAction(id: string): Promise<void> {
+  const supabase = await createClient();
+  await supabase.from("pisi_vzlet_penalty_pool").delete().eq("id", id);
   revalidatePath("/", "layout");
 }

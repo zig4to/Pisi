@@ -1,5 +1,10 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database, VzletTask } from "@/lib/types/database.types";
+import type {
+  Database,
+  VzletDay,
+  VzletPenaltyItem,
+  VzletTask,
+} from "@/lib/types/database.types";
 
 type TypedSupabaseClient = SupabaseClient<Database>;
 
@@ -26,6 +31,33 @@ export async function getVzletTasks(
     .order("for_date", { ascending: true })
     .order("done", { ascending: true })
     .order("position", { ascending: true });
+
+  if (error) throw error;
+  return data ?? [];
+}
+
+/** Zaključeni dnevi s točkami, naraščajoče po dnevu (za graf napredka). */
+export async function getVzletDays(
+  supabase: TypedSupabaseClient
+): Promise<VzletDay[]> {
+  const { data, error } = await supabase
+    .from("pisi_vzlet_days")
+    .select("*")
+    .order("day", { ascending: true });
+
+  if (error) throw error;
+  return data ?? [];
+}
+
+/** Uporabnikov seznam kazenskih opravil. */
+export async function getPenaltyPool(
+  supabase: TypedSupabaseClient
+): Promise<VzletPenaltyItem[]> {
+  const { data, error } = await supabase
+    .from("pisi_vzlet_penalty_pool")
+    .select("*")
+    .order("position", { ascending: true })
+    .order("created_at", { ascending: true });
 
   if (error) throw error;
   return data ?? [];

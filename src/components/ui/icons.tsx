@@ -250,3 +250,18 @@ export const IconRocket = (p: SVGProps<SVGSVGElement>) => (
     <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
   </Base>
 );
+
+// Lucide „flame“
+export const IconFlame = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
+  </Base>
+);
+
+// Lucide „trending-up“
+export const IconTrendingUp = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M16 7h6v6" />
+    <path d="m22 7-8.5 8.5-5-5L2 17" />
+  </Base>
+);

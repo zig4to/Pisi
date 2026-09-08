@@ -214,6 +214,7 @@ export type Database = {
           done: boolean;
           done_at: string | null;
           position: number;
+          is_penalty: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -225,6 +226,7 @@ export type Database = {
           done?: boolean;
           done_at?: string | null;
           position?: number;
+          is_penalty?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -236,8 +238,69 @@ export type Database = {
           done?: boolean;
           done_at?: string | null;
           position?: number;
+          is_penalty?: boolean;
           created_at?: string;
           updated_at?: string;
+        };
+      };
+      pisi_vzlet_days: {
+        Relationships: [];
+        Row: {
+          id: string;
+          user_id: string;
+          day: string;
+          points: number;
+          tasks_total: number;
+          tasks_done: number;
+          all_done: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string;
+          day: string;
+          points: number;
+          tasks_total?: number;
+          tasks_done?: number;
+          all_done?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          day?: string;
+          points?: number;
+          tasks_total?: number;
+          tasks_done?: number;
+          all_done?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      pisi_vzlet_penalty_pool: {
+        Relationships: [];
+        Row: {
+          id: string;
+          user_id: string;
+          title: string;
+          position: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string;
+          title: string;
+          position?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          title?: string;
+          position?: number;
+          created_at?: string;
         };
       };
     };
@@ -273,6 +336,19 @@ export type VzletTaskInsert =
   Database["public"]["Tables"]["pisi_vzlet_tasks"]["Insert"];
 export type VzletTaskUpdate =
   Database["public"]["Tables"]["pisi_vzlet_tasks"]["Update"];
+
+export type VzletDay = Database["public"]["Tables"]["pisi_vzlet_days"]["Row"];
+export type VzletDayInsert =
+  Database["public"]["Tables"]["pisi_vzlet_days"]["Insert"];
+export type VzletDayUpdate =
+  Database["public"]["Tables"]["pisi_vzlet_days"]["Update"];
+
+export type VzletPenaltyItem =
+  Database["public"]["Tables"]["pisi_vzlet_penalty_pool"]["Row"];
+export type VzletPenaltyItemInsert =
+  Database["public"]["Tables"]["pisi_vzlet_penalty_pool"]["Insert"];
+export type VzletPenaltyItemUpdate =
+  Database["public"]["Tables"]["pisi_vzlet_penalty_pool"]["Update"];
 
 // ===== Kompoziti za UI =====
 

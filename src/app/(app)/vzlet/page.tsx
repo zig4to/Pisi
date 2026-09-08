@@ -1,11 +1,14 @@
 import { createClient } from "@/lib/supabase/server";
-import { getVzletTasks } from "@/lib/data/vzlet";
+import { getVzletDays, getVzletTasks } from "@/lib/data/vzlet";
 import VzletBoard from "@/components/vzlet/VzletBoard";
 
-// „Vzlet“ — dnevni fokus na najpomembnejša opravila.
+// „Vzlet“ / Misije — dnevni fokus na najpomembnejša opravila.
 export default async function VzletPage() {
   const supabase = await createClient();
-  const tasks = await getVzletTasks(supabase);
+  const [tasks, days] = await Promise.all([
+    getVzletTasks(supabase),
+    getVzletDays(supabase),
+  ]);
 
-  return <VzletBoard tasks={tasks} />;
+  return <VzletBoard tasks={tasks} days={days} />;
 }

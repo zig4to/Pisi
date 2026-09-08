@@ -2,20 +2,22 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import clsx from "@/lib/utils/clsx";
-import type { VzletTask } from "@/lib/types/database.types";
+import type { VzletDay, VzletTask } from "@/lib/types/database.types";
 import {
   addVzletTaskAction,
   deleteVzletTaskAction,
   renameVzletTaskAction,
-  rolloverVzletTasksAction,
+  settleVzletAction,
   toggleVzletTaskAction,
 } from "@/actions/vzlet";
 import { celebrationMessage, pluralOpravki } from "@/lib/vzlet/messages";
+import { currentStreak } from "@/lib/vzlet/score";
 import Button from "@/components/ui/Button";
 import Menu, { MenuItem } from "@/components/ui/Menu";
 import PromptDialog from "@/components/ui/PromptDialog";
-import { IconCheck, IconPlus, IconRocket } from "@/components/ui/icons";
+import { IconCheck, IconFlame, IconPlus, IconRocket } from "@/components/ui/icons";
 import Fireworks from "@/components/vzlet/Fireworks";
+import Crash from "@/components/vzlet/Crash";
 import VzletPlanDialog from "@/components/vzlet/VzletPlanDialog";
 
 function localDateStr(d: Date): string {
@@ -27,8 +29,10 @@ function localDateStr(d: Date): string {
 
 export default function VzletBoard({
   tasks: initialTasks,
+  days,
 }: {
   tasks: VzletTask[];
+  days: VzletDay[];
 }) {
   const [tasks, setTasks] = useState<VzletTask[]>(initialTasks);
   const [dialog, setDialog] = useState<"today" | "tomorrow" | null>(null);
@@ -37,8 +41,9 @@ export default function VzletBoard({
   );
   const [toast, setToast] = useState<{ id: number; text: string } | null>(null);
   const [burst, setBurst] = useState<{ id: number; big: boolean } | null>(null);
+  const [crash, setCrash] = useState<number | null>(null);
   const [, startTransition] = useTransition();
-  const rolledRef = useRef(false);
+  const settledRef = useRef(false);
   const burstSeq = useRef(0);
   const toastSeq = useRef(0);
 
@@ -60,14 +65,16 @@ export default function VzletBoard({
   tomorrow.setDate(tomorrow.getDate() + 1);
   const tomorrowStr = localDateStr(tomorrow);
 
-  // Prenos neopravljenih opravil iz preteklih dni na danes — enkrat na prikaz.
+  // Zaključi pretekle dneve (točke + kazni) in prenesi neopravljena na danes —
+  // enkrat na prikaz.
   useEffect(() => {
-    if (rolledRef.current) return;
-    if (tasks.some((t) => !t.done && t.for_date < todayStr)) {
-      rolledRef.current = true;
-      startTransition(() => rolloverVzletTasksAction(todayStr));
-    }
-  }, [tasks, todayStr, startTransition]);
+    if (settledRef.current) return;
+    settledRef.current = true;
+    startTransition(async () => {
+      const res = await settleVzletAction(todayStr);
+      if (res.missedDays > 0) setCrash(res.missedDays);
+    });
+  }, [todayStr, startTransition]);
 
   const todayTasks = tasks
     .filter((t) => t.for_date === todayStr || (!t.done && t.for_date < todayStr))
@@ -85,6 +92,8 @@ export default function VzletBoard({
   const totalToday = todayTasks.length;
   const doneToday = todayTasks.filter((t) => t.done).length;
   const remaining = totalToday - doneToday;
+  const allDoneToday = totalToday > 0 && remaining === 0;
+  const streakNow = currentStreak(days) + (allDoneToday ? 1 : 0);
 
   const toggle = (task: VzletTask) => {
     const next = !task.done;
@@ -143,7 +152,7 @@ export default function VzletBoard({
             </Button>
             <Button onClick={() => setDialog("tomorrow")}>
               <IconPlus />
-              Za jutri
+              Cilji za jutri
             </Button>
           </div>
         </div>
@@ -154,8 +163,23 @@ export default function VzletBoard({
             {progressLine}
           </p>
           {totalToday > 0 && (
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              {doneToday}/{totalToday} opravljeno
+            <p className="flex flex-wrap items-center gap-x-1 text-sm text-gray-500 dark:text-gray-400">
+              <span>{doneToday}/{totalToday} opravljeno</span>
+              <span aria-hidden>·</span>
+              <span>
+                danes{" "}
+                <span className="font-semibold text-blue-600 dark:text-blue-400">
+                  +{5 + totalToday}
+                </span>
+                , če dokončaš vse
+              </span>
+              {streakNow > 0 && (
+                <span className="inline-flex items-center gap-0.5 text-orange-500 dark:text-orange-400">
+                  <span aria-hidden>·</span>
+                  <IconFlame className="h-4 w-4" />
+                  {streakNow}
+                </span>
+              )}
             </p>
           )}
         </div>
@@ -191,7 +215,12 @@ export default function VzletBoard({
             {todayTasks.map((task) => (
               <li
                 key={task.id}
-                className="group flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3.5 dark:border-gray-800 dark:bg-gray-900"
+                className={clsx(
+                  "group flex items-center gap-3 rounded-xl border px-4 py-3.5",
+                  task.is_penalty
+                    ? "border-amber-300 bg-amber-50 dark:border-amber-800/60 dark:bg-amber-950/30"
+                    : "border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"
+                )}
               >
                 <button
                   type="button"
@@ -222,6 +251,11 @@ export default function VzletBoard({
                 >
                   {task.title}
                 </button>
+                {task.is_penalty && (
+                  <span className="flex-shrink-0 rounded bg-amber-200 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-800 dark:bg-amber-900 dark:text-amber-200">
+                    kazen
+                  </span>
+                )}
                 <Menu>
                   {(close) => (
                     <>
@@ -259,6 +293,10 @@ export default function VzletBoard({
           big={burst.big}
           onDone={() => setBurst(null)}
         />
+      )}
+
+      {crash != null && (
+        <Crash count={crash} onDone={() => setCrash(null)} />
       )}
 
       {toast && (
