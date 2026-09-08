@@ -204,6 +204,42 @@ export type Database = {
           created_at?: string;
         };
       };
+      pisi_dons_tasks: {
+        Relationships: [];
+        Row: {
+          id: string;
+          user_id: string;
+          title: string;
+          for_date: string;
+          done: boolean;
+          done_at: string | null;
+          position: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string;
+          title: string;
+          for_date: string;
+          done?: boolean;
+          done_at?: string | null;
+          position?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          title?: string;
+          for_date?: string;
+          done?: boolean;
+          done_at?: string | null;
+          position?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -231,6 +267,12 @@ export type PageUpdate = Database["public"]["Tables"]["pisi_pages"]["Update"];
 export type Tag = Database["public"]["Tables"]["pisi_tags"]["Row"];
 export type TagInsert = Database["public"]["Tables"]["pisi_tags"]["Insert"];
 export type TagUpdate = Database["public"]["Tables"]["pisi_tags"]["Update"];
+
+export type DonsTask = Database["public"]["Tables"]["pisi_dons_tasks"]["Row"];
+export type DonsTaskInsert =
+  Database["public"]["Tables"]["pisi_dons_tasks"]["Insert"];
+export type DonsTaskUpdate =
+  Database["public"]["Tables"]["pisi_dons_tasks"]["Update"];
 
 // ===== Kompoziti za UI =====
 

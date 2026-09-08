@@ -220,7 +220,7 @@ export default function PageList({
           style={{ borderLeft: `3px solid ${notebook.color}` }}
         >
           <span
-            className="h-2 w-2 flex-shrink-0 rounded-full"
+            className="h-2.5 w-2.5 flex-shrink-0 rounded-[4px]"
             style={{ backgroundColor: notebook.color }}
           />
           <span
@@ -309,7 +309,7 @@ export default function PageList({
                 >
                   <span
                     className={clsx(
-                      "flex items-center gap-1.5 truncate text-sm",
+                      "flex items-center gap-1.5 truncate text-[15px]",
                       active
                         ? "font-semibold text-blue-800 dark:text-blue-200"
                         : "text-gray-800 dark:text-gray-200"

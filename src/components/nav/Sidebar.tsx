@@ -28,8 +28,8 @@ import {
   IconBook,
   IconChevronDown,
   IconChevronRight,
+  IconHome,
   IconLogout,
-  IconMenu,
   IconPin,
   IconPlus,
   IconSearch,
@@ -173,14 +173,25 @@ export default function Sidebar({
             Pisi
           </span>
         </Link>
-        <button
-          type="button"
-          className="rounded p-1 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 md:hidden"
-          onClick={() => setMobileOpen(false)}
-          aria-label="Zapri meni"
-        >
-          <IconX />
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            className="rounded p-1 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 md:hidden"
+            onClick={() => setMobileOpen(false)}
+            aria-label="Zapri meni"
+          >
+            <IconX />
+          </button>
+          <Link
+            href="/"
+            onClick={() => setMobileOpen(false)}
+            className="rounded p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+            aria-label="Domov"
+            title="Domov"
+          >
+            <IconHome />
+          </Link>
+        </div>
       </div>
 
       {/* iskanje */}
@@ -259,7 +270,7 @@ export default function Sidebar({
                     <ColorDot color={nb.color} />
                     <span
                       className={clsx(
-                        "truncate text-sm",
+                        "truncate text-base",
                         nbActive
                           ? "font-semibold text-blue-700 dark:text-blue-300"
                           : "text-gray-800 dark:text-gray-200"
@@ -383,7 +394,7 @@ export default function Sidebar({
                             <ColorDot color={sec.color} />
                             <span
                               className={clsx(
-                                "truncate text-sm",
+                                "truncate text-[15px]",
                                 secActive
                                   ? "font-medium text-blue-700 dark:text-blue-300"
                                   : "text-gray-700 dark:text-gray-300"
@@ -501,15 +512,24 @@ export default function Sidebar({
 
   return (
     <>
-      {/* mobilni gumb — navpično poravnan na sredino zgornje vrstice (min-h-12) */}
-      <div className="fixed left-3 top-0 z-20 flex h-12 items-center md:hidden">
+      {/* mobilni gumbi — desno zgoraj, navpično poravnani na sredino vrstice (min-h-12) */}
+      <div className="fixed right-3 top-0 z-20 flex h-12 items-center gap-2 md:hidden">
+        <Link
+          href="/"
+          onClick={() => setMobileOpen(false)}
+          aria-label="Domov"
+          title="Domov"
+          className="rounded-md border border-gray-300 bg-white p-2 text-gray-600 shadow-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+        >
+          <IconHome />
+        </Link>
         <button
           type="button"
           onClick={() => setMobileOpen(true)}
-          aria-label="Odpri meni"
+          aria-label="Odpri beležke"
           className="rounded-md border border-gray-300 bg-white p-2 text-gray-600 shadow-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
         >
-          <IconMenu />
+          <IconBook />
         </button>
       </div>
 

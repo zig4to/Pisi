@@ -20,7 +20,7 @@ export default function SectionTabs({
   const [dialogOpen, setDialogOpen] = useState(false);
 
   return (
-    <div className="flex min-h-12 items-stretch border-b border-gray-200 bg-white pl-14 dark:border-gray-800 dark:bg-gray-900 md:min-h-0 md:pl-2">
+    <div className="flex min-h-12 items-stretch border-b border-gray-200 bg-white pl-2 pr-14 dark:border-gray-800 dark:bg-gray-900 md:min-h-0 md:pr-0">
       <div className="flex flex-1 items-center gap-1 overflow-x-auto px-2 py-1.5">
         {sections.map((sec) => {
           const active = sec.id === activeSectionId;
@@ -37,7 +37,7 @@ export default function SectionTabs({
               style={active ? { borderColor: sec.color } : undefined}
             >
               <span
-                className="h-2 w-2 flex-shrink-0 rounded-full"
+                className="h-2.5 w-2.5 flex-shrink-0 rounded-[4px]"
                 style={{ backgroundColor: sec.color }}
               />
               <span className="max-w-[12rem] truncate">{sec.title}</span>

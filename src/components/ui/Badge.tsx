@@ -1,7 +1,7 @@
 export function ColorDot({ color, className }: { color: string; className?: string }) {
   return (
     <span
-      className={"inline-block h-2.5 w-2.5 flex-shrink-0 rounded-full " + (className ?? "")}
+      className={"inline-block h-3 w-3 flex-shrink-0 rounded-[4px] " + (className ?? "")}
       style={{ backgroundColor: color }}
       aria-hidden="true"
     />
