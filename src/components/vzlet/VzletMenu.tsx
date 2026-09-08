@@ -4,11 +4,13 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "@/lib/utils/clsx";
+import { logoutAction } from "@/actions/auth";
 import {
   getMyVzletSharingAction,
   setVzletSharingAction,
 } from "@/actions/vzlet";
 import {
+  IconLogout,
   IconMenu,
   IconRocket,
   IconTrendingUp,
@@ -134,6 +136,18 @@ export default function VzletMenu() {
             <IconRocket className="h-4 w-4" />
             Cilj aplikacije
           </button>
+
+          <div className="my-1 border-t border-gray-200 dark:border-gray-700" />
+
+          <form action={logoutAction}>
+            <button
+              type="submit"
+              className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-sm font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950"
+            >
+              <IconLogout className="h-4 w-4" />
+              Odjava
+            </button>
+          </form>
         </div>
       )}
 
