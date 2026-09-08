@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <html
       lang="sl"
-      data-theme="light"
+      data-theme="dark"
       data-sso="idle"
       suppressHydrationWarning
       className={`${rubik.variable} h-full overflow-x-hidden antialiased`}

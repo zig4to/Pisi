@@ -1,7 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useLayoutEffect, useState } from "react";
-import { THEME_STORAGE_KEY, type ThemePreference } from "@/lib/theme";
+import {
+  DEFAULT_THEME,
+  THEME_STORAGE_KEY,
+  type ThemePreference,
+} from "@/lib/theme";
 import clsx from "@/lib/utils/clsx";
 
 function systemTheme(): "light" | "dark" {
@@ -22,7 +26,7 @@ function readStored(): ThemePreference {
   } catch {
     // localStorage ni na voljo (privatno okno ipd.)
   }
-  return "system";
+  return DEFAULT_THEME;
 }
 
 const SunIcon = (
@@ -56,7 +60,7 @@ const OPTIONS: {
 ];
 
 export default function ThemeToggle() {
-  const [pref, setPref] = useState<ThemePreference>("system");
+  const [pref, setPref] = useState<ThemePreference>(DEFAULT_THEME);
 
   // Po montaži preberi dejansko izbiro iz localStorage (SSR je ne pozna) in
   // znova nastavi atribut — React ga ob dev-remountu pobriše, kar bi sicer
