@@ -23,7 +23,6 @@ import {
 } from "@/actions/sections";
 import { ColorDot } from "@/components/ui/Badge";
 import Menu, { MenuItem } from "@/components/ui/Menu";
-import VzletMenu from "@/components/vzlet/VzletMenu";
 import PromptDialog from "@/components/ui/PromptDialog";
 import {
   IconBook,
@@ -56,8 +55,6 @@ export default function Sidebar({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  // Na straneh „Vzlet“ je stranski meni beležk skrit — ostane le gumb za domov.
-  const onVzlet = pathname === "/vzlet" || pathname.startsWith("/vzlet/");
   const params = useParams<{ notebookId?: string; sectionId?: string }>();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dialog, setDialog] = useState<DialogState>(null);
@@ -526,18 +523,14 @@ export default function Sidebar({
         >
           <IconHome />
         </Link>
-        {onVzlet ? (
-          <VzletMenu />
-        ) : (
-          <button
-            type="button"
-            onClick={() => setMobileOpen(true)}
-            aria-label="Odpri beležke"
-            className="rounded-md border border-gray-300 bg-white p-2 text-gray-600 shadow-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
-          >
-            <IconBook />
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={() => setMobileOpen(true)}
+          aria-label="Odpri beležke"
+          className="rounded-md border border-gray-300 bg-white p-2 text-gray-600 shadow-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+        >
+          <IconBook />
+        </button>
       </div>
 
       {/* desktop */}

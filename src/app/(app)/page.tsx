@@ -1,19 +1,10 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
-import { getVzletDays } from "@/lib/data/vzlet";
-import { currentStreak, totalPoints } from "@/lib/vzlet/score";
 import { IconBook } from "@/components/ui/icons";
-import VzletCard from "@/components/vzlet/VzletCard";
 
 // Začetna stran aplikacije. Stranski meni (beležke) je vedno na voljo prek
-// postavitve `(app)/layout.tsx`. Tu ponudimo kratko predstavitev in dve
-// glavni poti: Beležke in Vzlet.
-export default async function HomePage() {
-  const supabase = await createClient();
-  const days = await getVzletDays(supabase);
-  const points = totalPoints(days);
-  const streak = currentStreak(days);
-
+// postavitve `(app)/layout.tsx`. Tu ponudimo kratko predstavitev in vstop v
+// Beležke.
+export default function HomePage() {
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-6 py-12">
       <div className="w-full max-w-md">
@@ -59,8 +50,8 @@ export default async function HomePage() {
           </p>
         </div>
 
-        {/* glavni poti */}
-        <div className="mt-8 grid grid-cols-2 gap-3">
+        {/* glavna pot */}
+        <div className="mt-8">
           <Link
             href="/belezke"
             className="group flex flex-col items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-5 text-center transition-colors hover:border-blue-300 hover:bg-blue-50 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-blue-800 dark:hover:bg-blue-950"
@@ -75,12 +66,6 @@ export default async function HomePage() {
               Zapiski, sekcije in strani
             </span>
           </Link>
-
-          <VzletCard
-            points={points}
-            streak={streak}
-            showStats={days.length > 0}
-          />
         </div>
       </div>
     </div>
