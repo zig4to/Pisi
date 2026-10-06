@@ -38,7 +38,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 ## Zagon
 
 ```bash
-npm run dev      # http://localhost:3000
+npm run dev      # http://localhost:3001
 npm run lint
 npm run build
 ```
