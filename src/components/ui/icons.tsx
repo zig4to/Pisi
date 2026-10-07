@@ -92,7 +92,44 @@ export const IconBook = (p: SVGProps<SVGSVGElement>) => (
   </Base>
 );
 
-export const IconLogout = (p: SVGProps<SVGSVGElement>) => (
+export const IconPackageSearch = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l2-1.14" />
+    <path d="m7.5 4.27 9 5.15M3.29 7 12 12l8.71-5M12 22V12" />
+    <circle cx="18.5" cy="15.5" r="2.5" />
+    <path d="M20.27 17.27 22 19" />
+  </Base>
+);
+
+export const IconMapPin = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M20 10c0 4.99-5.54 10.19-7.4 11.8a1 1 0 0 1-1.2 0C9.54 20.19 4 14.99 4 10a8 8 0 0 1 16 0" />
+    <circle cx="12" cy="10" r="3" />
+  </Base>
+);
+
+export const IconUsers = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+    <circle cx="9" cy="7" r="4" />
+    <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+  </Base>
+);
+
+export const IconHistory = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+    <path d="M3 3v5h5M12 7v5l4 2" />
+  </Base>
+);
+
+export const IconMove = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M5 12h14M12 5l7 7-7 7" />
+  </Base>
+);
+
+export const IconLogout =(p: SVGProps<SVGSVGElement>) => (
   <Base {...p}>
     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
   </Base>

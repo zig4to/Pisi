@@ -13,6 +13,8 @@ type PromptDialogProps = {
   submitLabel?: string;
   initialValue?: string;
   placeholder?: string;
+  /** Neobvezni predlogi pod poljem; tap takoj potrdi izbrano vrednost. */
+  suggestions?: string[];
   onSubmit: (value: string) => Promise<{ error?: string } | void> | void;
 };
 
@@ -24,6 +26,7 @@ export default function PromptDialog({
   submitLabel = "Shrani",
   initialValue = "",
   placeholder,
+  suggestions = [],
   onSubmit,
 }: PromptDialogProps) {
   const [value, setValue] = useState(initialValue);
@@ -39,8 +42,11 @@ export default function PromptDialog({
     /* eslint-enable react-hooks/set-state-in-effect */
   }, [open, initialValue]);
 
-  const submit = () => {
-    const trimmed = value.trim();
+  const typed = value.trim().toLowerCase();
+  const shown = suggestions.filter((s) => s.toLowerCase().includes(typed));
+
+  const submit = (picked?: string) => {
+    const trimmed = (picked ?? value).trim();
     if (!trimmed) {
       setError("Polje ne sme biti prazno.");
       return;
@@ -73,6 +79,21 @@ export default function PromptDialog({
             onChange={(e) => setValue(e.target.value)}
           />
         </Field>
+        {shown.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {shown.map((s) => (
+              <button
+                key={s}
+                type="button"
+                disabled={pending}
+                onClick={() => submit(s)}
+                className="rounded-full border border-gray-300 bg-white px-2.5 py-0.5 text-xs text-gray-700 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+        )}
         {error && (
           <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
         )}

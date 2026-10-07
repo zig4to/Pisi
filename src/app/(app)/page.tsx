@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { IconBook } from "@/components/ui/icons";
+import { IconBook, IconPackageSearch } from "@/components/ui/icons";
 
 // Začetna stran aplikacije. Stranski meni (beležke) je vedno na voljo prek
 // postavitve `(app)/layout.tsx`. Tu ponudimo kratko predstavitev in vstop v
-// Beležke.
+// Beležke in Kesiii.
 export default function HomePage() {
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-6 py-12">
@@ -50,8 +50,8 @@ export default function HomePage() {
           </p>
         </div>
 
-        {/* glavna pot */}
-        <div className="mt-8">
+        {/* glavni poti */}
+        <div className="mt-8 flex flex-col gap-3">
           <Link
             href="/belezke"
             className="group flex flex-col items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-5 text-center transition-colors hover:border-blue-300 hover:bg-blue-50 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-blue-800 dark:hover:bg-blue-950"
@@ -64,6 +64,21 @@ export default function HomePage() {
             </span>
             <span className="text-xs text-gray-500 dark:text-gray-400">
               Zapiski, sekcije in strani
+            </span>
+          </Link>
+
+          <Link
+            href="/kesiii"
+            className="group flex flex-col items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50/60 px-4 py-5 text-center transition-colors hover:border-emerald-300 hover:bg-emerald-50 dark:border-emerald-900 dark:bg-emerald-950/40 dark:hover:border-emerald-800 dark:hover:bg-emerald-950"
+          >
+            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-600 text-white">
+              <IconPackageSearch className="h-5 w-5" />
+            </span>
+            <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+              Kesiii
+            </span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              Najdi z lahkoto
             </span>
           </Link>
         </div>

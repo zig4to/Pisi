@@ -204,9 +204,118 @@ export type Database = {
           created_at?: string;
         };
       };
+      pisi_kesiii_households: {
+        Relationships: [];
+        Row: {
+          id: string;
+          name: string;
+          join_code: string;
+          created_at: string;
+        };
+        Insert: never;
+        Update: {
+          name?: string;
+        };
+      };
+      pisi_kesiii_members: {
+        Relationships: [];
+        Row: {
+          household_id: string;
+          user_id: string;
+          display_name: string;
+          role: "owner" | "member";
+          joined_at: string;
+        };
+        Insert: never;
+        Update: {
+          display_name?: string;
+        };
+      };
+      pisi_kesiii_locations: {
+        Relationships: [];
+        Row: {
+          id: string;
+          household_id: string;
+          parent_id: string | null;
+          name: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          household_id: string;
+          parent_id?: string | null;
+          name: string;
+        };
+        Update: {
+          parent_id?: string | null;
+          name?: string;
+        };
+      };
+      pisi_kesiii_items: {
+        Relationships: [];
+        Row: {
+          id: string;
+          household_id: string;
+          name: string;
+          note: string;
+          location_id: string | null;
+          location_detail: string;
+          created_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          household_id: string;
+          name: string;
+          note?: string;
+          location_id?: string | null;
+          location_detail?: string;
+        };
+        Update: {
+          name?: string;
+          note?: string;
+          location_id?: string | null;
+          location_detail?: string;
+        };
+      };
+      pisi_kesiii_item_moves: {
+        Relationships: [];
+        Row: {
+          id: string;
+          item_id: string;
+          household_id: string;
+          from_path: string | null;
+          from_detail: string;
+          to_path: string | null;
+          to_detail: string;
+          moved_by: string | null;
+          moved_at: string;
+        };
+        Insert: never;
+        Update: never;
+      };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      pisi_kesiii_ensure_household: {
+        Args: Record<string, never>;
+        Returns: string;
+      };
+      pisi_kesiii_join: {
+        Args: { code: string };
+        Returns: string | null;
+      };
+      pisi_kesiii_leave: {
+        Args: Record<string, never>;
+        Returns: undefined;
+      };
+      pisi_kesiii_new_code: {
+        Args: Record<string, never>;
+        Returns: string | null;
+      };
+    };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };
@@ -231,6 +340,13 @@ export type PageUpdate = Database["public"]["Tables"]["pisi_pages"]["Update"];
 export type Tag = Database["public"]["Tables"]["pisi_tags"]["Row"];
 export type TagInsert = Database["public"]["Tables"]["pisi_tags"]["Insert"];
 export type TagUpdate = Database["public"]["Tables"]["pisi_tags"]["Update"];
+
+type KesiiiTables = Database["public"]["Tables"];
+export type KesiiiHousehold = KesiiiTables["pisi_kesiii_households"]["Row"];
+export type KesiiiMember = KesiiiTables["pisi_kesiii_members"]["Row"];
+export type KesiiiLocation = KesiiiTables["pisi_kesiii_locations"]["Row"];
+export type KesiiiItem = KesiiiTables["pisi_kesiii_items"]["Row"];
+export type KesiiiMove = KesiiiTables["pisi_kesiii_item_moves"]["Row"];
 
 // ===== Kompoziti za UI =====
 
