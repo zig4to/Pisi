@@ -16,7 +16,7 @@ export default async function AppLayout({
   const tree = await getNotebookTree(supabase);
 
   return (
-    <div className="flex h-screen w-full overflow-hidden">
+    <div className="flex h-dvh w-full overflow-hidden">
       <SsoHashCleanup />
       <Sidebar tree={tree} userEmail={user?.email ?? null} />
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">

@@ -296,6 +296,59 @@ export type Database = {
         Insert: never;
         Update: never;
       };
+      pisi_nabava_categories: {
+        Relationships: [];
+        Row: {
+          id: string;
+          user_id: string;
+          name: string;
+          position: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string;
+          name: string;
+          position?: number;
+        };
+        Update: {
+          name?: string;
+          position?: number;
+        };
+      };
+      pisi_nabava_items: {
+        Relationships: [];
+        Row: {
+          id: string;
+          user_id: string;
+          category_id: string | null;
+          name: string;
+          store: string;
+          url: string;
+          priority: "urgent" | "normal";
+          bought_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string;
+          category_id?: string | null;
+          name: string;
+          store?: string;
+          url?: string;
+          priority?: "urgent" | "normal";
+          bought_at?: string | null;
+        };
+        Update: {
+          category_id?: string | null;
+          name?: string;
+          store?: string;
+          url?: string;
+          priority?: "urgent" | "normal";
+          bought_at?: string | null;
+        };
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -347,6 +400,9 @@ export type KesiiiMember = KesiiiTables["pisi_kesiii_members"]["Row"];
 export type KesiiiLocation = KesiiiTables["pisi_kesiii_locations"]["Row"];
 export type KesiiiItem = KesiiiTables["pisi_kesiii_items"]["Row"];
 export type KesiiiMove = KesiiiTables["pisi_kesiii_item_moves"]["Row"];
+
+export type NabavaCategory = Database["public"]["Tables"]["pisi_nabava_categories"]["Row"];
+export type NabavaItem = Database["public"]["Tables"]["pisi_nabava_items"]["Row"];
 
 // ===== Kompoziti za UI =====
 

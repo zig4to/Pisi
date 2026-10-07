@@ -101,7 +101,22 @@ export const IconPackageSearch = (p: SVGProps<SVGSVGElement>) => (
   </Base>
 );
 
-export const IconMapPin = (p: SVGProps<SVGSVGElement>) => (
+export const IconShoppingCart = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <circle cx="8" cy="21" r="1" />
+    <circle cx="19" cy="21" r="1" />
+    <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+  </Base>
+);
+
+export const IconExternalLink = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M15 3h6v6M10 14 21 3" />
+    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+  </Base>
+);
+
+export const IconMapPin =(p: SVGProps<SVGSVGElement>) => (
   <Base {...p}>
     <path d="M20 10c0 4.99-5.54 10.19-7.4 11.8a1 1 0 0 1-1.2 0C9.54 20.19 4 14.99 4 10a8 8 0 0 1 16 0" />
     <circle cx="12" cy="10" r="3" />

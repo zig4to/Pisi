@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { IconBook, IconPackageSearch } from "@/components/ui/icons";
+import { IconBook, IconPackageSearch, IconShoppingCart } from "@/components/ui/icons";
 
 // Začetna stran aplikacije. Stranski meni (beležke) je vedno na voljo prek
 // postavitve `(app)/layout.tsx`. Tu ponudimo kratko predstavitev in vstop v
-// Beležke in Kesiii.
+// Beležke, Kesiii in Nabavo.
 export default function HomePage() {
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-6 py-12">
@@ -79,6 +79,21 @@ export default function HomePage() {
             </span>
             <span className="text-xs text-gray-500 dark:text-gray-400">
               Najdi z lahkoto
+            </span>
+          </Link>
+
+          <Link
+            href="/nabava"
+            className="group flex flex-col items-center gap-2 rounded-xl border border-amber-200 bg-amber-50/60 px-4 py-5 text-center transition-colors hover:border-amber-300 hover:bg-amber-50 dark:border-amber-900 dark:bg-amber-950/40 dark:hover:border-amber-800 dark:hover:bg-amber-950"
+          >
+            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500 text-white">
+              <IconShoppingCart className="h-5 w-5" />
+            </span>
+            <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+              Nabava
+            </span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              Kaj moram še kupiti
             </span>
           </Link>
         </div>
