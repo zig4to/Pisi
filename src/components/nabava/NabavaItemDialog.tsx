@@ -15,6 +15,14 @@ import { Field, Input } from "@/components/ui/Input";
 import SuggestionChips from "@/components/kesiii/SuggestionChips";
 import { IconPlus, IconX } from "@/components/ui/icons";
 
+export type Priority = NabavaItem["priority"];
+
+// priority "urgent" = Hitra nabava, "normal" = Nenujno
+export const PRIORITY_TABS: { value: Priority; label: string; short: string }[] = [
+  { value: "urgent", label: "Hitra nabava", short: "Hitro" },
+  { value: "normal", label: "Nenujno", short: "Nenujno" },
+];
+
 const AMBER_BTN =
   "bg-amber-500 hover:bg-amber-600 disabled:bg-amber-300 dark:disabled:bg-amber-900";
 
@@ -28,6 +36,7 @@ export default function NabavaItemDialog({
   categoryId,
   categories,
   stores,
+  urgent: urgentDefault = true,
 }: {
   onClose: () => void;
   /** obstoječi izdelek = urejanje */
@@ -37,6 +46,8 @@ export default function NabavaItemDialog({
   categories: NabavaCategory[];
   /** že uporabljene trgovine (predlogi) */
   stores: string[];
+  /** zavihek za nov izdelek: true = Hitra nabava */
+  urgent?: boolean;
 }) {
   const [name, setName] = useState(item?.name ?? "");
   const [category, setCategory] = useState<string | null>(
@@ -45,7 +56,7 @@ export default function NabavaItemDialog({
   const [store, setStore] = useState(item?.store ?? "");
   // vedno vsaj eno (prazno) polje za link
   const [urls, setUrls] = useState<string[]>(item?.urls.length ? item.urls : [""]);
-  const [urgent, setUrgent] = useState(item?.priority === "urgent");
+  const [urgent, setUrgent] = useState(item ? item.priority === "urgent" : urgentDefault);
   const [newCategory, setNewCategory] = useState<string | null>(null);
   const [added, setAdded] = useState<{ id: string; name: string }[]>([]);
   const [storeFocused, setStoreFocused] = useState(false);
@@ -210,15 +221,23 @@ export default function NabavaItemDialog({
           </button>
         </div>
 
-        <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-          <input
-            type="checkbox"
-            checked={urgent}
-            onChange={(e) => setUrgent(e.target.checked)}
-            className="h-4 w-4 accent-red-600"
-          />
-          Nujno
-        </label>
+        {/* izključujoča se checkboxa: vedno je izbran natanko eden */}
+        <div className="flex gap-5">
+          {PRIORITY_TABS.map((t) => (
+            <label
+              key={t.value}
+              className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300"
+            >
+              <input
+                type="checkbox"
+                checked={urgent === (t.value === "urgent")}
+                onChange={() => setUrgent(t.value === "urgent")}
+                className="h-4 w-4 accent-amber-500"
+              />
+              {t.short}
+            </label>
+          ))}
+        </div>
 
         {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
 

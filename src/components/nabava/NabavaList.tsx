@@ -12,7 +12,10 @@ import {
 import Button from "@/components/ui/Button";
 import Menu, { MenuItem } from "@/components/ui/Menu";
 import PromptDialog from "@/components/ui/PromptDialog";
-import NabavaItemDialog from "@/components/nabava/NabavaItemDialog";
+import NabavaItemDialog, {
+  PRIORITY_TABS,
+  type Priority,
+} from "@/components/nabava/NabavaItemDialog";
 import {
   IconChevronDown,
   IconChevronRight,
@@ -25,15 +28,12 @@ type Dialog =
   | { kind: "edit"; item: NabavaItem }
   | null;
 
-const byName = (a: { name: string }, b: { name: string }) => a.name.localeCompare(b.name, "sl");
-// nujni najprej, nato po imenu
-const byPriority = (a: NabavaItem, b: NabavaItem) =>
-  a.priority === b.priority ? byName(a, b) : a.priority === "urgent" ? -1 : 1;
+// „Vse“ levo, nato zavihka po nujnosti
+type Tab = Priority | "all";
+const TABS: { value: Tab; label: string }[] = [{ value: "all", label: "Vse" }, ...PRIORITY_TABS];
 
-const CHIP = "rounded-full border px-2.5 py-0.5 text-xs";
-const CHIP_ON = "border-amber-500 bg-amber-500 text-white";
-const CHIP_OFF =
-  "border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800";
+const byName = (a: { name: string }, b: { name: string }) => a.name.localeCompare(b.name, "sl");
+
 
 export default function NabavaList({
   categories,
@@ -44,8 +44,7 @@ export default function NabavaList({
 }) {
   const [dialog, setDialog] = useState<Dialog>(null);
   const [rename, setRename] = useState<NabavaCategory | null>(null);
-  const [urgentOnly, setUrgentOnly] = useState(false);
-  const [store, setStore] = useState<string | null>(null);
+  const [tab, setTab] = useState<Tab>("urgent");
   const [showBought, setShowBought] = useState(false);
   // takoj skrij odkljukane, preden strežnik osveži seznam
   const [toggled, setToggled] = useState<Record<string, boolean>>({});
@@ -53,14 +52,14 @@ export default function NabavaList({
   const [, startTransition] = useTransition();
 
   const isBought = (i: NabavaItem) => toggled[i.id] ?? i.bought_at !== null;
-  const open = items.filter((i) => !isBought(i));
-  const bought = items.filter(isBought).sort(byName);
+  const inTabOf = (t: Tab) => items.filter((i) => t === "all" || i.priority === t);
+  const openCount = (t: Tab) => inTabOf(t).filter((i) => !isBought(i)).length;
+  const inTab = inTabOf(tab);
+  const open = inTab.filter((i) => !isBought(i));
+  const bought = inTab.filter(isBought).sort(byName);
+  // vse trgovine (tudi iz drugega zavihka) — predlogi v obrazcu
   const stores = [...new Set(items.map((i) => i.store).filter(Boolean))].sort((a, b) =>
     a.localeCompare(b, "sl")
-  );
-  const filtering = urgentOnly || store !== null;
-  const visible = open.filter(
-    (i) => (!urgentOnly || i.priority === "urgent") && (store === null || i.store === store)
   );
 
   const groups = [
@@ -69,10 +68,10 @@ export default function NabavaList({
   ]
     .map((g) => ({
       ...g,
-      items: visible.filter((i) => i.category_id === g.id).sort(byPriority),
+      items: open.filter((i) => i.category_id === g.id).sort(byName),
     }))
-    // prazne kategorije pokaži samo brez filtra; „Brez kategorije“ samo, če ni prazna
-    .filter((g) => g.items.length > 0 || (g.category !== null && !filtering));
+    // prazne kategorije skrij (ostanejo na voljo v obrazcu izdelka)
+    .filter((g) => g.items.length > 0);
 
   const toggle = (item: NabavaItem, value: boolean) => {
     setToggled((t) => ({ ...t, [item.id]: value }));
@@ -87,6 +86,26 @@ export default function NabavaList({
 
   return (
     <div className="space-y-4">
+      <div className="grid grid-cols-[auto_1fr_1fr] gap-1 rounded-lg bg-gray-200/70 p-1 dark:bg-gray-800">
+        {TABS.map((t) => (
+          <button
+            key={t.value}
+            type="button"
+            aria-pressed={tab === t.value}
+            onClick={() => setTab(t.value)}
+            className={clsx(
+              "rounded-md px-3 py-1.5 text-sm font-medium",
+              tab === t.value
+                ? "bg-white text-gray-900 shadow-sm dark:bg-gray-950 dark:text-gray-100"
+                : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+            )}
+          >
+            {t.label}
+            <span className="ml-1.5 font-normal text-gray-400">{openCount(t.value)}</span>
+          </button>
+        ))}
+      </div>
+
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm text-gray-500 dark:text-gray-400">
           {open.length === 0 ? "Vse je kupljeno." : `Še ${open.length} za kupit`}
@@ -100,46 +119,16 @@ export default function NabavaList({
         </Button>
       </div>
 
-      {(open.some((i) => i.priority === "urgent") || stores.length > 0) && (
-        <div className="flex flex-wrap gap-1.5">
-          <button
-            type="button"
-            onClick={() => {
-              setUrgentOnly(false);
-              setStore(null);
-            }}
-            className={clsx(CHIP, !filtering ? CHIP_ON : CHIP_OFF)}
-          >
-            Vse
-          </button>
-          <button
-            type="button"
-            onClick={() => setUrgentOnly((v) => !v)}
-            className={clsx(
-              CHIP,
-              urgentOnly ? "border-red-600 bg-red-600 text-white" : CHIP_OFF
-            )}
-          >
-            Nujno
-          </button>
-          {stores.map((s) => (
-            <button
-              key={s}
-              type="button"
-              onClick={() => setStore((cur) => (cur === s ? null : s))}
-              className={clsx(CHIP, store === s ? CHIP_ON : CHIP_OFF)}
-            >
-              {s}
-            </button>
-          ))}
-        </div>
-      )}
-
+      {/* ločilna črta: zbledi proti robovoma */}
+      <div
+        aria-hidden
+        className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent dark:via-gray-700"
+      />
       {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
 
       {groups.length === 0 && (
         <p className="py-6 text-center text-sm text-gray-400">
-          {filtering ? "Ni izdelkov za ta filter." : "Seznam je prazen. Dodaj prvi izdelek z gumbom Dodaj."}
+          Tu ni ničesar za kupit. Dodaj izdelek z gumbom Dodaj.
         </p>
       )}
 
@@ -197,20 +186,16 @@ export default function NabavaList({
             </div>
           </div>
 
-          {g.items.length === 0 ? (
-            <p className="text-xs text-gray-400">Prazno.</p>
-          ) : (
-            <ul className="divide-y divide-gray-100 rounded-lg border border-gray-200 bg-white dark:divide-gray-800 dark:border-gray-800 dark:bg-gray-900">
-              {g.items.map((item) => (
-                <ItemRow
-                  key={item.id}
-                  item={item}
-                  onToggle={(v) => toggle(item, v)}
-                  onEdit={() => setDialog({ kind: "edit", item })}
-                />
-              ))}
-            </ul>
-          )}
+          <ul className="divide-y divide-gray-100 rounded-lg border border-gray-200 bg-white dark:divide-gray-800 dark:border-gray-800 dark:bg-gray-900">
+            {g.items.map((item) => (
+              <ItemRow
+                key={item.id}
+                item={item}
+                onToggle={(v) => toggle(item, v)}
+                onEdit={() => setDialog({ kind: "edit", item })}
+              />
+            ))}
+          </ul>
         </section>
       ))}
 
@@ -232,7 +217,7 @@ export default function NabavaList({
                 onClick={() => {
                   if (!confirm(`Izbrišem vseh ${bought.length} kupljenih izdelkov?`)) return;
                   startTransition(async () => {
-                    const res = await clearBoughtAction();
+                    const res = await clearBoughtAction(tab === "all" ? undefined : tab);
                     if (res.error) setError(res.error);
                   });
                 }}
@@ -264,6 +249,7 @@ export default function NabavaList({
           categoryId={dialog.kind === "new" ? dialog.categoryId : undefined}
           categories={categories}
           stores={stores}
+          urgent={tab !== "normal"}
         />
       )}
 
@@ -310,16 +296,9 @@ function ItemRow({
         >
           {item.name}
         </span>
-        {(item.store || item.priority === "urgent") && (
-          <span className="mt-0.5 flex items-center gap-1.5 text-xs">
-            {item.priority === "urgent" && !bought && (
-              <span className="rounded bg-red-100 px-1.5 font-medium text-red-700 dark:bg-red-950 dark:text-red-300">
-                Nujno
-              </span>
-            )}
-            {item.store && (
-              <span className="truncate text-gray-500 dark:text-gray-400">{item.store}</span>
-            )}
+        {item.store && (
+          <span className="mt-0.5 block truncate text-xs text-gray-500 dark:text-gray-400">
+            {item.store}
           </span>
         )}
       </button>

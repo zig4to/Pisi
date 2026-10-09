@@ -72,6 +72,7 @@ export type NabavaItemInput = {
   categoryId: string | null;
   store: string;
   urls: string[];
+  /** true = Hitra nabava, false = Nenujno */
   urgent: boolean;
 };
 
@@ -129,12 +130,12 @@ export async function deleteItemAction(id: string): Promise<Result> {
   return {};
 }
 
-export async function clearBoughtAction(): Promise<Result> {
+/** Počisti kupljene v enem zavihku (Hitra nabava / Nenujno) ali brez `priority` vse. */
+export async function clearBoughtAction(priority?: "urgent" | "normal"): Promise<Result> {
   const supabase = await createClient();
-  const { error } = await supabase
-    .from("pisi_nabava_items")
-    .delete()
-    .not("bought_at", "is", null);
+  let query = supabase.from("pisi_nabava_items").delete().not("bought_at", "is", null);
+  if (priority) query = query.eq("priority", priority);
+  const { error } = await query;
   if (error) return { error: error.message };
   revalidate();
   return {};
