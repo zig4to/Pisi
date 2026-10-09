@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, type MouseEvent } from "react";
 import clsx from "@/lib/utils/clsx";
 import type { NabavaCategory, NabavaItem } from "@/lib/types/database.types";
 import {
@@ -200,7 +200,7 @@ export default function NabavaList({
           {g.items.length === 0 ? (
             <p className="text-xs text-gray-400">Prazno.</p>
           ) : (
-            <ul className="divide-y divide-gray-100 overflow-hidden rounded-lg border border-gray-200 bg-white dark:divide-gray-800 dark:border-gray-800 dark:bg-gray-900">
+            <ul className="divide-y divide-gray-100 rounded-lg border border-gray-200 bg-white dark:divide-gray-800 dark:border-gray-800 dark:bg-gray-900">
               {g.items.map((item) => (
                 <ItemRow
                   key={item.id}
@@ -242,7 +242,7 @@ export default function NabavaList({
             )}
           </div>
           {showBought && (
-            <ul className="divide-y divide-gray-100 overflow-hidden rounded-lg border border-gray-200 bg-white opacity-70 dark:divide-gray-800 dark:border-gray-800 dark:bg-gray-900">
+            <ul className="divide-y divide-gray-100 rounded-lg border border-gray-200 bg-white opacity-70 dark:divide-gray-800 dark:border-gray-800 dark:bg-gray-900">
               {bought.map((item) => (
                 <ItemRow
                   key={item.id}
@@ -328,6 +328,7 @@ function ItemRow({
           href={item.urls[0]}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={(e) => openPreview(e, item.urls[0])}
           aria-label="Odpri link"
           title={item.urls[0]}
           className="flex-shrink-0 rounded p-1.5 text-gray-500 hover:bg-gray-100 hover:text-amber-600 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-amber-400"
@@ -354,7 +355,10 @@ function ItemRow({
                 target="_blank"
                 rel="noopener noreferrer"
                 title={u}
-                onClick={close}
+                onClick={(e) => {
+                  openPreview(e, u);
+                  close();
+                }}
                 className="flex w-full max-w-64 items-center gap-2 rounded px-2 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
               >
                 <IconExternalLink className="h-4 w-4 flex-shrink-0" />
@@ -366,6 +370,24 @@ function ItemRow({
       )}
     </li>
   );
+}
+
+// Predogled linka v manjšem ločenem oknu (vedno istem). Telefoni ga odprejo
+// kot nov zavihek; s Ctrl/Shift/srednjim klikom ostane običajen zavihek.
+function openPreview(e: MouseEvent, url: string) {
+  if (e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
+  const w = 720;
+  const h = 560;
+  // ob levem robu trenutnega okna, da ne prekrije seznama
+  const left = Math.round(window.screenX + 24);
+  const top = Math.round(window.screenY + (window.outerHeight - h) / 2);
+  e.preventDefault();
+  // brez „noopener“, ker bi sicer vsak klik odprl novo okno namesto istega
+  const win = window.open(url, "nabava-predogled", `popup,width=${w},height=${h},left=${left},top=${top}`);
+  if (win) {
+    win.opener = null;
+    win.focus();
+  }
 }
 
 /** „https://www.merkur.si/izdelek/123“ -> „merkur.si/izdelek/123“ */
