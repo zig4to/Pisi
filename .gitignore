@@ -43,3 +43,4 @@ next-env.d.ts
 
 # dnevnik samodejnega zagona (scripts/start-prod.ps1)
 scripts/start-prod.log
+scripts/dev.log
