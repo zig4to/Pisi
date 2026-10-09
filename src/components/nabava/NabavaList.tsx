@@ -323,18 +323,58 @@ function ItemRow({
           </span>
         )}
       </button>
-      {item.url && (
+      {item.urls.length === 1 && (
         <a
-          href={item.url}
+          href={item.urls[0]}
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Odpri link"
-          title={item.url}
+          title={item.urls[0]}
           className="flex-shrink-0 rounded p-1.5 text-gray-500 hover:bg-gray-100 hover:text-amber-600 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-amber-400"
         >
           <IconExternalLink />
         </a>
       )}
+      {item.urls.length > 1 && (
+        <Menu
+          label={`Linki (${item.urls.length})`}
+          className="flex-shrink-0"
+          trigger={
+            <span className="flex items-center gap-0.5 p-0.5">
+              <IconExternalLink />
+              <span className="text-xs font-medium">{item.urls.length}</span>
+            </span>
+          }
+        >
+          {(close) =>
+            item.urls.map((u) => (
+              <a
+                key={u}
+                href={u}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={u}
+                onClick={close}
+                className="flex w-full max-w-64 items-center gap-2 rounded px-2 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
+              >
+                <IconExternalLink className="h-4 w-4 flex-shrink-0" />
+                <span className="truncate">{linkLabel(u)}</span>
+              </a>
+            ))
+          }
+        </Menu>
+      )}
     </li>
   );
+}
+
+/** „https://www.merkur.si/izdelek/123“ -> „merkur.si/izdelek/123“ */
+function linkLabel(url: string) {
+  try {
+    const u = new URL(url);
+    const path = u.pathname === "/" ? "" : u.pathname;
+    return u.hostname.replace(/^www\./, "") + path;
+  } catch {
+    return url;
+  }
 }

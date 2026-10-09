@@ -71,19 +71,21 @@ export type NabavaItemInput = {
   name: string;
   categoryId: string | null;
   store: string;
-  url: string;
+  urls: string[];
   urgent: boolean;
 };
 
 function normalize(input: NabavaItemInput) {
-  let url = input.url.trim();
-  // „trgovina.si/izdelek“ -> „https://trgovina.si/izdelek“, da link deluje
-  if (url && !/^https?:\/\//i.test(url)) url = "https://" + url;
+  const urls = input.urls
+    .map((u) => u.trim())
+    .filter(Boolean)
+    // „trgovina.si/izdelek“ -> „https://trgovina.si/izdelek“, da link deluje
+    .map((u) => (/^https?:\/\//i.test(u) ? u : "https://" + u));
   return {
     name: input.name.trim(),
     category_id: input.categoryId,
     store: input.store.trim(),
-    url,
+    urls: [...new Set(urls)],
     priority: input.urgent ? ("urgent" as const) : ("normal" as const),
   };
 }

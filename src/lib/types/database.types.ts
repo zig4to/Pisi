@@ -324,7 +324,7 @@ export type Database = {
           category_id: string | null;
           name: string;
           store: string;
-          url: string;
+          urls: string[];
           priority: "urgent" | "normal";
           bought_at: string | null;
           created_at: string;
@@ -336,7 +336,7 @@ export type Database = {
           category_id?: string | null;
           name: string;
           store?: string;
-          url?: string;
+          urls?: string[];
           priority?: "urgent" | "normal";
           bought_at?: string | null;
         };
@@ -344,7 +344,7 @@ export type Database = {
           category_id?: string | null;
           name?: string;
           store?: string;
-          url?: string;
+          urls?: string[];
           priority?: "urgent" | "normal";
           bought_at?: string | null;
         };
