@@ -6,6 +6,14 @@ import { getPagesBySection } from "@/lib/data/pages";
 import SectionTabs from "@/components/sections/SectionTabs";
 import PageList from "@/components/pages/PageList";
 
+type Settled<T> = { value: T } | { error: unknown };
+const ok = <T,>(value: T): Settled<T> => ({ value });
+const fail = (error: unknown): Settled<never> => ({ error });
+function unwrap<T>(res: Settled<T>): T {
+  if ("error" in res) throw res.error;
+  return res.value;
+}
+
 export default async function SectionLayout({
   children,
   params,
@@ -16,14 +24,20 @@ export default async function SectionLayout({
   const { notebookId, sectionId } = await params;
   const supabase = await createClient();
 
-  const notebook = await getNotebookById(supabase, notebookId).catch(() => null);
+  // poizvedbe so neodvisne — hkrati namesto ena za drugo. Napake sekcij in strani
+  // se upoštevajo šele po preusmeritvah, da neveljaven ID še vedno preusmeri.
+  const [notebook, sectionsRes, pagesRes] = await Promise.all([
+    getNotebookById(supabase, notebookId).catch(() => null),
+    getSectionsByNotebook(supabase, notebookId).then(ok, fail),
+    getPagesBySection(supabase, sectionId).then(ok, fail),
+  ]);
   if (!notebook) redirect("/");
 
-  const sections = await getSectionsByNotebook(supabase, notebookId);
+  const sections = unwrap(sectionsRes);
   const activeSection = sections.find((s) => s.id === sectionId);
   if (!activeSection) redirect(`/belezke/${notebookId}`);
 
-  const pages = await getPagesBySection(supabase, sectionId);
+  const pages = unwrap(pagesRes);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">

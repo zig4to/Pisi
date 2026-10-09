@@ -9,11 +9,12 @@ export default async function AppLayout({
   children: React.ReactNode;
 }) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const tree = await getNotebookTree(supabase);
+  const [
+    {
+      data: { user },
+    },
+    tree,
+  ] = await Promise.all([supabase.auth.getUser(), getNotebookTree(supabase)]);
 
   return (
     <div className="flex h-dvh w-full overflow-hidden">

@@ -12,12 +12,13 @@ export default async function PagePage({
   const { notebookId, sectionId, pageId } = await params;
   const supabase = await createClient();
 
-  const page = await getPageById(supabase, pageId).catch(() => null);
+  const [page, allTags] = await Promise.all([
+    getPageById(supabase, pageId).catch(() => null),
+    getTags(supabase),
+  ]);
   if (!page || page.section_id !== sectionId) {
     redirect(`/belezke/${notebookId}/${sectionId}`);
   }
-
-  const allTags = await getTags(supabase);
 
   return (
     <PageEditor
