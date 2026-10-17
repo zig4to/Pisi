@@ -37,6 +37,7 @@ export default function NabavaItemDialog({
   categories,
   stores,
   urgent: urgentDefault = true,
+  projectId,
 }: {
   onClose: () => void;
   /** obstoječi izdelek = urejanje */
@@ -48,6 +49,8 @@ export default function NabavaItemDialog({
   stores: string[];
   /** zavihek za nov izdelek: true = Hitra nabava */
   urgent?: boolean;
+  /** nov izdelek pripada temu projektu */
+  projectId?: string;
 }) {
   const [name, setName] = useState(item?.name ?? "");
   const [category, setCategory] = useState<string | null>(
@@ -57,6 +60,7 @@ export default function NabavaItemDialog({
   // vedno vsaj eno (prazno) polje za link
   const [urls, setUrls] = useState<string[]>(item?.urls.length ? item.urls : [""]);
   const [urgent, setUrgent] = useState(item ? item.priority === "urgent" : urgentDefault);
+  const [price, setPrice] = useState(item?.price != null ? String(item.price) : "");
   const [newCategory, setNewCategory] = useState<string | null>(null);
   const [added, setAdded] = useState<{ id: string; name: string }[]>([]);
   const [storeFocused, setStoreFocused] = useState(false);
@@ -84,7 +88,20 @@ export default function NabavaItemDialog({
   };
 
   const submit = () => {
-    const input = { name, categoryId: category, store, urls, urgent };
+    const cleanPrice = price.trim().replace(",", ".");
+    const parsed = cleanPrice ? Number(cleanPrice) : null;
+    if (parsed !== null && (!Number.isFinite(parsed) || parsed < 0)) {
+      return setError("Cena mora biti število, npr. 12,50.");
+    }
+    const input = {
+      name,
+      categoryId: category,
+      store,
+      urls,
+      urgent,
+      price: parsed,
+      ...(projectId && !item ? { projectId } : {}),
+    };
     startTransition(async () => {
       const res = item ? await updateItemAction(item.id, input) : await createItemAction(input);
       if (res.error) return setError(res.error);
@@ -161,16 +178,27 @@ export default function NabavaItemDialog({
           )}
         </div>
 
-        <Field label="Trgovina" htmlFor="nabava-store">
-          <Input
-            id="nabava-store"
-            value={store}
-            onChange={(e) => setStore(e.target.value)}
-            onFocus={() => setStoreFocused(true)}
-            onBlur={() => setStoreFocused(false)}
-            placeholder="npr. Merkur, Amazon"
-          />
-        </Field>
+        <div className="flex gap-3">
+          <Field label="Trgovina" htmlFor="nabava-store" className="flex-1">
+            <Input
+              id="nabava-store"
+              value={store}
+              onChange={(e) => setStore(e.target.value)}
+              onFocus={() => setStoreFocused(true)}
+              onBlur={() => setStoreFocused(false)}
+              placeholder="npr. Merkur, Amazon"
+            />
+          </Field>
+          <Field label="Cena (€)" htmlFor="nabava-price" className="w-28">
+            <Input
+              id="nabava-price"
+              inputMode="decimal"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              placeholder="0,00"
+            />
+          </Field>
+        </div>
         {storeFocused && storeSuggestions.length > 0 && (
           <div className="-mt-2">
             <SuggestionChips suggestions={storeSuggestions} onPick={setStore} />

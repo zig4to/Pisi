@@ -2,7 +2,7 @@
 
 import Button from "@/components/ui/Button";
 
-// Najpogostejši vzrok: SQL migracija 0007_nabava.sql še ni zagnana
+// Najpogostejši vzrok: SQL migracija 0007_nabava.sql (ali 0009_projekti.sql) še ni zagnana
 // (PostgREST ne najde tabele → PGRST205 / 42P01).
 export default function NabavaError({
   error,
@@ -20,7 +20,7 @@ export default function NabavaError({
       </p>
       <p className="text-red-700 dark:text-red-300">
         {missingSchema
-          ? "V Supabase → SQL Editor zaženi supabase/migrations/0007_nabava.sql, nato osveži stran."
+          ? "V Supabase → SQL Editor zaženi manjkajoče migracije (supabase/migrations/0007_nabava.sql do 0009_projekti.sql), nato osveži stran."
           : error.message}
       </p>
       <Button variant="secondary" onClick={reset}>

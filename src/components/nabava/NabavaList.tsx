@@ -1,8 +1,11 @@
 "use client";
 
 import { useState, useTransition, type MouseEvent } from "react";
+import Link from "next/link";
 import clsx from "@/lib/utils/clsx";
+import { projectColor } from "@/lib/utils/color";
 import type { NabavaCategory, NabavaItem } from "@/lib/types/database.types";
+import type { NabavaProject } from "@/lib/data/nabava";
 import {
   clearBoughtAction,
   deleteCategoryAction,
@@ -38,13 +41,25 @@ const byName = (a: { name: string }, b: { name: string }) => a.name.localeCompar
 export default function NabavaList({
   categories,
   items,
+  projects = [],
+  projectId,
+  stores: allStores,
 }: {
   categories: NabavaCategory[];
   items: NabavaItem[];
+  /** za oznako izdelkov, ki pripadajo projektu */
+  projects?: NabavaProject[];
+  /** seznam znotraj projekta: novi izdelki pripadajo temu projektu, brez oznake projekta */
+  projectId?: string;
+  /** predlogi trgovin; privzeto trgovine izdelkov na seznamu */
+  stores?: string[];
 }) {
+  const projectOf = (id: string | null) =>
+    !projectId && id ? (projects.find((p) => p.id === id) ?? null) : null;
   const [dialog, setDialog] = useState<Dialog>(null);
   const [rename, setRename] = useState<NabavaCategory | null>(null);
-  const [tab, setTab] = useState<Tab>("urgent");
+  // v projektu so vsi izdelki na enem seznamu
+  const [tab, setTab] = useState<Tab>(projectId ? "all" : "urgent");
   const [showBought, setShowBought] = useState(false);
   // takoj skrij odkljukane, preden strežnik osveži seznam
   const [toggled, setToggled] = useState<Record<string, boolean>>({});
@@ -57,10 +72,14 @@ export default function NabavaList({
   const inTab = inTabOf(tab);
   const open = inTab.filter((i) => !isBought(i));
   const bought = inTab.filter(isBought).sort(byName);
+  // „Počisti kupljeno“ izdelkov projektov ne briše (zgodovina projekta)
+  const clearable = bought.filter((i) => i.project_id === null);
   // vse trgovine (tudi iz drugega zavihka) — predlogi v obrazcu
-  const stores = [...new Set(items.map((i) => i.store).filter(Boolean))].sort((a, b) =>
-    a.localeCompare(b, "sl")
-  );
+  const stores =
+    allStores ??
+    [...new Set(items.map((i) => i.store).filter(Boolean))].sort((a, b) =>
+      a.localeCompare(b, "sl")
+    );
 
   const groups = [
     ...[...categories].sort(byName).map((c) => ({ category: c as NabavaCategory | null, id: c.id })),
@@ -86,25 +105,27 @@ export default function NabavaList({
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-[auto_1fr_1fr] gap-1 rounded-lg bg-gray-200/70 p-1 dark:bg-gray-800">
-        {TABS.map((t) => (
-          <button
-            key={t.value}
-            type="button"
-            aria-pressed={tab === t.value}
-            onClick={() => setTab(t.value)}
-            className={clsx(
-              "rounded-md px-3 py-1.5 text-sm font-medium",
-              tab === t.value
-                ? "bg-white text-gray-900 shadow-sm dark:bg-gray-950 dark:text-gray-100"
-                : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-            )}
-          >
-            {t.label}
-            <span className="ml-1.5 font-normal text-gray-400">{openCount(t.value)}</span>
-          </button>
-        ))}
-      </div>
+      {!projectId && (
+        <div className="grid grid-cols-[auto_1fr_1fr] gap-1 rounded-lg bg-gray-200/70 p-1 dark:bg-gray-800">
+          {TABS.map((t) => (
+            <button
+              key={t.value}
+              type="button"
+              aria-pressed={tab === t.value}
+              onClick={() => setTab(t.value)}
+              className={clsx(
+                "rounded-md px-3 py-1.5 text-sm font-medium",
+                tab === t.value
+                  ? "bg-white text-gray-900 shadow-sm dark:bg-gray-950 dark:text-gray-100"
+                  : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+              )}
+            >
+              {t.label}
+              <span className="ml-1.5 font-normal text-gray-400">{openCount(t.value)}</span>
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -191,6 +212,7 @@ export default function NabavaList({
               <ItemRow
                 key={item.id}
                 item={item}
+                project={projectOf(item.project_id)}
                 onToggle={(v) => toggle(item, v)}
                 onEdit={() => setDialog({ kind: "edit", item })}
               />
@@ -210,12 +232,12 @@ export default function NabavaList({
               {showBought ? <IconChevronDown /> : <IconChevronRight />}
               Kupljeno ({bought.length})
             </button>
-            {showBought && (
+            {showBought && clearable.length > 0 && (
               <Button
                 variant="ghost"
                 className="text-xs"
                 onClick={() => {
-                  if (!confirm(`Izbrišem vseh ${bought.length} kupljenih izdelkov?`)) return;
+                  if (!confirm(`Izbrišem vseh ${clearable.length} kupljenih izdelkov?`)) return;
                   startTransition(async () => {
                     const res = await clearBoughtAction(tab === "all" ? undefined : tab);
                     if (res.error) setError(res.error);
@@ -232,6 +254,7 @@ export default function NabavaList({
                 <ItemRow
                   key={item.id}
                   item={item}
+                  project={projectOf(item.project_id)}
                   bought
                   onToggle={(v) => toggle(item, v)}
                   onEdit={() => setDialog({ kind: "edit", item })}
@@ -250,6 +273,7 @@ export default function NabavaList({
           categories={categories}
           stores={stores}
           urgent={tab !== "normal"}
+          projectId={projectId}
         />
       )}
 
@@ -269,11 +293,14 @@ export default function NabavaList({
 
 function ItemRow({
   item,
+  project,
   bought,
   onToggle,
   onEdit,
 }: {
   item: NabavaItem;
+  /** projekt, ki mu izdelek pripada (oznaka) */
+  project: NabavaProject | null;
   bought?: boolean;
   onToggle: (bought: boolean) => void;
   onEdit: () => void;
@@ -296,12 +323,28 @@ function ItemRow({
         >
           {item.name}
         </span>
-        {item.store && (
+        {(item.store || item.price != null) && (
           <span className="mt-0.5 block truncate text-xs text-gray-500 dark:text-gray-400">
-            {item.store}
+            {[item.store, item.price != null && formatPrice(item.price)]
+              .filter(Boolean)
+              .join(" · ")}
           </span>
         )}
       </button>
+      {project && (
+        <Link
+          href={`/projekti/${project.id}`}
+          title={`Projekt: ${project.title}`}
+          className="flex max-w-32 flex-shrink-0 items-center gap-1.5 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+        >
+          <span
+            aria-hidden
+            className="h-2 w-2 flex-shrink-0 rounded-full"
+            style={{ backgroundColor: projectColor(project) }}
+          />
+          <span className="truncate">{project.title}</span>
+        </Link>
+      )}
       {item.urls.length === 1 && (
         <a
           href={item.urls[0]}
@@ -378,4 +421,9 @@ function linkLabel(url: string) {
   } catch {
     return url;
   }
+}
+
+/** 12.5 -> „12,50 €“ */
+export function formatPrice(value: number) {
+  return Number(value).toLocaleString("sl-SI", { style: "currency", currency: "EUR" });
 }

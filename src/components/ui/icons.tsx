@@ -109,6 +109,13 @@ export const IconShoppingCart = (p: SVGProps<SVGSVGElement>) => (
   </Base>
 );
 
+export const IconFolderKanban = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z" />
+    <path d="M8 10v4M12 10v2M16 10v6" />
+  </Base>
+);
+
 export const IconExternalLink = (p: SVGProps<SVGSVGElement>) => (
   <Base {...p}>
     <path d="M15 3h6v6M10 14 21 3" />
@@ -234,6 +241,28 @@ export const IconQuote = (p: SVGProps<SVGSVGElement>) => (
 export const IconCode = (p: SVGProps<SVGSVGElement>) => (
   <Base {...p}>
     <path d="m16 18 6-6-6-6M8 6l-6 6 6 6" />
+  </Base>
+);
+
+export const IconStickyNote = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z" />
+    <path d="M15 3v4a2 2 0 0 0 2 2h4" />
+  </Base>
+);
+
+// Lucide „pencil“
+export const IconPencil = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+    <path d="m15 5 4 4" />
+  </Base>
+);
+
+// Lucide „flag“
+export const IconFlag = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}>
+    <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1zM4 22v-7" />
   </Base>
 );
 

@@ -327,6 +327,8 @@ export type Database = {
           urls: string[];
           priority: "urgent" | "normal";
           bought_at: string | null;
+          project_id: string | null;
+          price: number | null;
           created_at: string;
           updated_at: string;
         };
@@ -339,6 +341,8 @@ export type Database = {
           urls?: string[];
           priority?: "urgent" | "normal";
           bought_at?: string | null;
+          project_id?: string | null;
+          price?: number | null;
         };
         Update: {
           category_id?: string | null;
@@ -347,7 +351,127 @@ export type Database = {
           urls?: string[];
           priority?: "urgent" | "normal";
           bought_at?: string | null;
+          project_id?: string | null;
+          price?: number | null;
         };
+      };
+      pisi_projects: {
+        Relationships: [];
+        Row: {
+          id: string;
+          user_id: string;
+          title: string;
+          notes: string;
+          links: string[];
+          color: string | null;
+          completed_at: string | null;
+          position: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string;
+          title: string;
+          notes?: string;
+          links?: string[];
+          color?: string | null;
+          completed_at?: string | null;
+          position?: number;
+        };
+        Update: {
+          title?: string;
+          notes?: string;
+          links?: string[];
+          color?: string | null;
+          completed_at?: string | null;
+          position?: number;
+        };
+      };
+      pisi_project_entries: {
+        Relationships: [];
+        Row: {
+          id: string;
+          user_id: string;
+          project_id: string;
+          body: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string;
+          project_id: string;
+          body: string;
+        };
+        Update: {
+          body?: string;
+        };
+      };
+      pisi_project_steps: {
+        Relationships: [];
+        Row: {
+          id: string;
+          user_id: string;
+          project_id: string;
+          title: string;
+          done_at: string | null;
+          position: number;
+          vzlet_added_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string;
+          project_id: string;
+          title: string;
+          done_at?: string | null;
+          position?: number;
+        };
+        Update: {
+          title?: string;
+          done_at?: string | null;
+          position?: number;
+          vzlet_added_at?: string | null;
+        };
+      };
+      // Tabela aplikacije Vzlet (isti Supabase projekt) — splošni seznam opravil.
+      pisi_vzlet_backlog: {
+        Relationships: [];
+        Row: {
+          id: string;
+          user_id: string;
+          title: string;
+          position: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string;
+          title: string;
+          position?: number;
+        };
+        Update: {
+          title?: string;
+          position?: number;
+        };
+      };
+      pisi_project_images: {
+        Relationships: [];
+        Row: {
+          id: string;
+          user_id: string;
+          project_id: string;
+          path: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string;
+          project_id: string;
+          path: string;
+        };
+        Update: never;
       };
     };
     Views: Record<string, never>;
@@ -403,6 +527,22 @@ export type KesiiiMove = KesiiiTables["pisi_kesiii_item_moves"]["Row"];
 
 export type NabavaCategory = Database["public"]["Tables"]["pisi_nabava_categories"]["Row"];
 export type NabavaItem = Database["public"]["Tables"]["pisi_nabava_items"]["Row"];
+
+export type Project = Database["public"]["Tables"]["pisi_projects"]["Row"];
+export type ProjectEntry = Database["public"]["Tables"]["pisi_project_entries"]["Row"];
+export type ProjectStep = Database["public"]["Tables"]["pisi_project_steps"]["Row"];
+export type ProjectImage = Database["public"]["Tables"]["pisi_project_images"]["Row"];
+
+/** Projekt s povzetkom za kartico na seznamu. */
+export type ProjectSummary = Project & {
+  stepsDone: number;
+  stepsTotal: number;
+  openItems: number;
+  /** vsota cen vseh izdelkov projekta (€) */
+  cost: number;
+  /** čas zadnjega zapisa v dnevniku */
+  lastEntryAt: string | null;
+};
 
 // ===== Kompoziti za UI =====
 

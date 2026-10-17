@@ -7,6 +7,8 @@ type Result = { error?: string };
 
 function revalidate() {
   revalidatePath("/nabava", "layout");
+  // izdelki projektov so prikazani tudi v Projektih
+  revalidatePath("/projekti", "layout");
 }
 
 function duplicateName(message: string) {
@@ -74,6 +76,10 @@ export type NabavaItemInput = {
   urls: string[];
   /** true = Hitra nabava, false = Nenujno */
   urgent: boolean;
+  /** cena v €; null = ni vpisana */
+  price?: number | null;
+  /** projekt, ki mu izdelek pripada; `undefined` = ne spreminjaj */
+  projectId?: string | null;
 };
 
 function normalize(input: NabavaItemInput) {
@@ -88,6 +94,11 @@ function normalize(input: NabavaItemInput) {
     store: input.store.trim(),
     urls: [...new Set(urls)],
     priority: input.urgent ? ("urgent" as const) : ("normal" as const),
+    price:
+      input.price == null || !Number.isFinite(input.price) || input.price < 0
+        ? null
+        : Math.round(input.price * 100) / 100,
+    ...(input.projectId !== undefined ? { project_id: input.projectId } : {}),
   };
 }
 
@@ -130,10 +141,17 @@ export async function deleteItemAction(id: string): Promise<Result> {
   return {};
 }
 
-/** Počisti kupljene v enem zavihku (Hitra nabava / Nenujno) ali brez `priority` vse. */
+/**
+ * Počisti kupljene v enem zavihku (Hitra nabava / Nenujno) ali brez `priority` vse.
+ * Izdelki projektov ostanejo — so zgodovina in strošek projekta.
+ */
 export async function clearBoughtAction(priority?: "urgent" | "normal"): Promise<Result> {
   const supabase = await createClient();
-  let query = supabase.from("pisi_nabava_items").delete().not("bought_at", "is", null);
+  let query = supabase
+    .from("pisi_nabava_items")
+    .delete()
+    .not("bought_at", "is", null)
+    .is("project_id", null);
   if (priority) query = query.eq("priority", priority);
   const { error } = await query;
   if (error) return { error: error.message };

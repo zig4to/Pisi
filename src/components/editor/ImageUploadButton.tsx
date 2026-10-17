@@ -3,10 +3,8 @@
 import { useRef, useState } from "react";
 import type { Editor } from "@tiptap/react";
 import clsx from "@/lib/utils/clsx";
-import { createClient } from "@/lib/supabase/client";
+import { uploadImage } from "@/lib/utils/upload";
 import { IconImage } from "@/components/ui/icons";
-
-const BUCKET = "pisi-images";
 
 export default function ImageUploadButton({ editor }: { editor: Editor }) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -17,24 +15,7 @@ export default function ImageUploadButton({ editor }: { editor: Editor }) {
     setBusy(true);
     setError(null);
     try {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error("Nisi prijavljen.");
-
-      const ext = file.name.split(".").pop()?.toLowerCase() || "png";
-      const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from(BUCKET)
-        .upload(path, file, { cacheControl: "3600", upsert: false });
-      if (uploadError) throw uploadError;
-
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from(BUCKET).getPublicUrl(path);
-
+      const { publicUrl } = await uploadImage(file);
       editor.chain().focus().setImage({ src: publicUrl }).run();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Nalaganje ni uspelo.");

@@ -4,7 +4,7 @@ import NabavaList from "@/components/nabava/NabavaList";
 
 export default async function NabavaPage() {
   const supabase = await createClient();
-  const { categories, items } = await getNabava(supabase);
+  const { categories, items, projects } = await getNabava(supabase);
 
-  return <NabavaList categories={categories} items={items} />;
+  return <NabavaList categories={categories} items={items} projects={projects} />;
 }
