@@ -27,6 +27,28 @@ body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
+/* Utripajoči kazalec (caret) le v poljih za vnos — ne na navadnem besedilu
+   (npr. ob kliku na naslov ali pri vklopljenem brskanju s kazalcem, F7). */
+body {
+  caret-color: transparent;
+}
+input,
+textarea,
+select,
+[contenteditable="true"],
+[contenteditable=""] {
+  caret-color: auto;
+}
+
+/* Drsniki (scrollbar) so skriti — drsenje z miško, sledilno ploščico ali
+   prstom še vedno deluje. */
+* {
+  scrollbar-width: none;
+}
+*::-webkit-scrollbar {
+  display: none;
+}
+
 /* ===== Urejevalnik strani (Tiptap ProseMirror) ===== */
 .pisi-prose:focus {
   outline: none;

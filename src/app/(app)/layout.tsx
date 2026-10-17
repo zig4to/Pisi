@@ -20,7 +20,7 @@ export default async function AppLayout({
     <div className="flex h-dvh w-full overflow-hidden">
       <SsoHashCleanup />
       <Sidebar tree={tree} userEmail={user?.email ?? null} />
-      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+      <div className="flex min-w-0 flex-1 flex-col overflow-y-auto">
         {children}
       </div>
     </div>

@@ -102,6 +102,16 @@ export default function Sidebar({
       : "false";
   }, [mobileOpen]);
 
+  // Esc zapre predal
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [mobileOpen]);
+
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
   useEffect(() => {
     const isMobile = () => window.matchMedia("(max-width: 767px)").matches;
@@ -176,7 +186,7 @@ export default function Sidebar({
         <div className="flex items-center gap-1">
           <button
             type="button"
-            className="rounded p-1 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 md:hidden"
+            className="rounded p-1 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
             onClick={() => setMobileOpen(false)}
             aria-label="Zapri meni"
           >
@@ -512,8 +522,8 @@ export default function Sidebar({
 
   return (
     <>
-      {/* mobilni gumbi — desno zgoraj, navpično poravnani na sredino vrstice (min-h-12) */}
-      <div className="fixed right-3 top-0 z-20 flex h-12 items-center gap-2 md:hidden">
+      {/* gumba desno zgoraj, navpično poravnana na sredino vrstice (min-h-12) */}
+      <div className="fixed right-3 top-0 z-20 flex h-12 items-center gap-2">
         <Link
           href="/"
           onClick={() => setMobileOpen(false)}
@@ -533,13 +543,10 @@ export default function Sidebar({
         </button>
       </div>
 
-      {/* desktop */}
-      <div className="hidden md:block">{body}</div>
-
-      {/* mobilni predal — vedno v DOM-u, drsi z leve strani */}
+      {/* predal (mobilno in namizje) — vedno v DOM-u, drsi z leve strani */}
       <div
         className={clsx(
-          "fixed inset-0 z-50 md:hidden",
+          "fixed inset-0 z-50",
           mobileOpen ? "pointer-events-auto" : "pointer-events-none"
         )}
         aria-hidden={!mobileOpen}

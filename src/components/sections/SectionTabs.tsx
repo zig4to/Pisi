@@ -20,7 +20,7 @@ export default function SectionTabs({
   const [dialogOpen, setDialogOpen] = useState(false);
 
   return (
-    <div className="flex min-h-12 items-stretch border-b border-gray-200 bg-white pl-2 pr-14 dark:border-gray-800 dark:bg-gray-900 md:min-h-0 md:pr-0">
+    <div className="flex min-h-12 items-stretch border-b border-gray-200 bg-white pl-2 pr-14 dark:border-gray-800 dark:bg-gray-900 md:pr-28">
       <div className="flex flex-1 items-center gap-1 overflow-x-auto px-2 py-1.5">
         {sections.map((sec) => {
           const active = sec.id === activeSectionId;
