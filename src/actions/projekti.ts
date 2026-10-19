@@ -188,6 +188,8 @@ export async function toggleStepAction(id: string, done: boolean): Promise<Resul
  * Doda korak na splošni seznam opravil v aplikaciji Vzlet (pisi_vzlet_backlog,
  * isti Supabase projekt). Ime projekta je v oklepaju, da je v Vzletu jasno,
  * kam korak sodi. Vzlet ga od tam prestavi na danes ali jutri.
+ * `project_step_id` poveže opravilo s korakom: ko ga v Vzletu odkljukaš, se
+ * korak obkljuka sam (sprožilci v 0012_projekti_vzlet_sync.sql).
  */
 export async function addStepToVzletAction(id: string): Promise<Result> {
   const supabase = await createClient();
@@ -214,7 +216,11 @@ export async function addStepToVzletAction(id: string): Promise<Result> {
   const title = project ? `${step.title} (${project.title})` : step.title;
   const { error } = await supabase
     .from("pisi_vzlet_backlog")
-    .insert({ title: title.slice(0, 500), position: (last?.position ?? 0) + 1 });
+    .insert({
+      title: title.slice(0, 500),
+      position: (last?.position ?? 0) + 1,
+      project_step_id: id,
+    });
   if (error) return { error: "Dodajanje v Vzlet ni uspelo: " + error.message };
 
   const { error: markError } = await supabase
