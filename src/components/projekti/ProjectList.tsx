@@ -135,13 +135,11 @@ function ProjectCard({ project: p }: { project: ProjectSummary }) {
             {p.title}
           </span>
         </span>
-        <span className="flex-shrink-0 text-xs text-gray-400">
-          {p.completed_at
-            ? `Dokončano ${formatDate(p.completed_at)}`
-            : p.lastEntryAt
-              ? `Zadnji zapis ${formatDate(p.lastEntryAt)}`
-              : `Začeto ${formatDate(p.created_at)}`}
-        </span>
+        {p.completed_at && (
+          <span className="flex-shrink-0 text-xs text-gray-400">
+            Dokončano {formatDate(p.completed_at)}
+          </span>
+        )}
       </div>
       {p.stepsTotal > 0 && (
         <div className="flex items-center gap-2">

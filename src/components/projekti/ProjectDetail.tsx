@@ -109,18 +109,8 @@ export default function ProjectDetail({
   return (
     <div className="space-y-4">
       {/* glava */}
-      <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0">
-          <h1 className="flex items-baseline gap-2.5 break-words text-2xl font-bold text-gray-900 dark:text-gray-100">
-            <ColorDot color={projectColor(project)} className="h-4 w-4 flex-shrink-0 self-center" />
-            <span className="min-w-0">{project.title}</span>
-          </h1>
-          <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-            Začeto {formatDate(project.created_at)}
-            {done && ` · Dokončano ${formatDate(project.completed_at!)}`}
-          </p>
-        </div>
-        <div className="flex flex-shrink-0 items-center gap-1">
+      <div className="space-y-1">
+        <div className="-ml-2 flex items-center justify-between gap-1">
           <Link
             href="/projekti"
             aria-label="Nazaj na projekte"
@@ -162,6 +152,16 @@ export default function ProjectDetail({
               </>
             )}
           </Menu>
+        </div>
+        <div>
+          <h1 className="flex items-baseline gap-2.5 break-words text-2xl font-bold text-gray-900 dark:text-gray-100">
+            <ColorDot color={projectColor(project)} className="h-4 w-4 flex-shrink-0 self-center" />
+            <span className="min-w-0">{project.title}</span>
+          </h1>
+          <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+            Začeto {formatDate(project.created_at)}
+            {done && ` · Dokončano ${formatDate(project.completed_at!)}`}
+          </p>
         </div>
       </div>
 
