@@ -158,3 +158,34 @@ export async function clearBoughtAction(priority?: "urgent" | "normal"): Promise
   revalidate();
   return {};
 }
+
+/**
+ * Izdelek kot opravilo „Kupi: …“ na konec seznama opravil v Vzletu.
+ * `nabava_item_id` poveže opravilo z izdelkom: ko ga v Vzletu odkljukaš, se
+ * izdelek označi kot kupljen (sprožilci v 0013_nabava_vzlet_sync.sql).
+ */
+export async function addItemToVzletAction(id: string): Promise<Result> {
+  const supabase = await createClient();
+  const { data: item, error: readError } = await supabase
+    .from("pisi_nabava_items")
+    .select("name")
+    .eq("id", id)
+    .single();
+  if (readError) return { error: readError.message };
+
+  // na konec seznama — enako kot nextBacklogPosition v Vzletu
+  const { data: last } = await supabase
+    .from("pisi_vzlet_backlog")
+    .select("position")
+    .order("position", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const { error } = await supabase.from("pisi_vzlet_backlog").insert({
+    title: `Kupi: ${item.name}`.slice(0, 500),
+    position: (last?.position ?? 0) + 1,
+    nabava_item_id: id,
+  });
+  if (error) return { error: "Dodajanje v Vzlet ni uspelo: " + error.message };
+  return {};
+}

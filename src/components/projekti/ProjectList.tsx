@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { TIME_ZONE } from "@/lib/utils/dates";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import clsx from "@/lib/utils/clsx";
@@ -17,6 +18,7 @@ type Tab = "open" | "done";
 
 export function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("sl-SI", {
+    timeZone: TIME_ZONE,
     day: "numeric",
     month: "numeric",
     year: "numeric",

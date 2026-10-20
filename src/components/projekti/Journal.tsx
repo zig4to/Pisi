@@ -3,6 +3,7 @@
 import { Fragment, useState, useTransition, type ReactNode } from "react";
 import clsx from "@/lib/utils/clsx";
 import { STEP_DONE_PREFIX } from "@/lib/utils/projekti";
+import { dayKey, daysBetween, formatDate, formatTime, shiftDayKey } from "@/lib/utils/dates";
 import type { Project, ProjectEntry, ProjectStep } from "@/lib/types/database.types";
 import { addEntryAction, deleteEntryAction, updateEntryAction } from "@/actions/projekti";
 import Section from "@/components/projekti/Section";
@@ -33,29 +34,17 @@ function plural(n: number, forms: [string, string, string, string]) {
 const dni = (n: number) => plural(n, ["dan", "dneva", "dnevi", "dni"]);
 const zapisov = (n: number) => plural(n, ["zapis", "zapisa", "zapisi", "zapisov"]);
 
-const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-const dayKey = (iso: string) => {
-  const d = new Date(iso);
-  return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
-};
-/** Celi koledarski dnevi med dvema trenutkoma. */
-const daysBetween = (from: string | Date, to: string | Date) =>
-  Math.round((startOfDay(new Date(to)) - startOfDay(new Date(from))) / DAY);
-
 function dayLabel(iso: string) {
   const diff = daysBetween(iso, new Date());
   if (diff === 0) return "Danes";
   if (diff === 1) return "Včeraj";
-  return new Date(iso).toLocaleDateString("sl-SI", {
+  return formatDate(iso, {
     weekday: "long",
     day: "numeric",
     month: "long",
-    ...(new Date(iso).getFullYear() !== new Date().getFullYear() ? { year: "numeric" } : {}),
+    ...(dayKey(iso).slice(0, 4) !== dayKey(new Date()).slice(0, 4) ? { year: "numeric" } : {}),
   });
 }
-
-const timeOf = (iso: string) =>
-  new Date(iso).toLocaleTimeString("sl-SI", { hour: "2-digit", minute: "2-digit" });
 
 const rtf = new Intl.RelativeTimeFormat("sl", { numeric: "auto" });
 function relative(iso: string) {
@@ -71,13 +60,12 @@ function relative(iso: string) {
 
 /** Zaporedni dnevi z zapisom do danes (ali do včeraj, če danes še ni zapisa). */
 function streak(days: Set<string>) {
-  const d = new Date();
-  const key = (x: Date) => `${x.getFullYear()}-${x.getMonth() + 1}-${x.getDate()}`;
-  if (!days.has(key(d))) d.setDate(d.getDate() - 1);
+  let key = dayKey(new Date());
+  if (!days.has(key)) key = shiftDayKey(key, 1);
   let n = 0;
-  while (days.has(key(d))) {
+  while (days.has(key)) {
     n++;
-    d.setDate(d.getDate() - 1);
+    key = shiftDayKey(key, 1);
   }
   return n;
 }
@@ -243,7 +231,7 @@ export default function Journal({
               icon={<IconFlag className="h-4 w-4" />}
               tone="emerald"
               title="Projekt dokončan"
-              meta={`${new Date(project.completed_at).toLocaleDateString("sl-SI")} · trajal ${dni(projectDay)}`}
+              meta={`${formatDate(project.completed_at)} · trajal ${dni(projectDay)}`}
             />
           )}
 
@@ -317,7 +305,7 @@ export default function Journal({
             icon={<IconRocket className="h-4 w-4" />}
             tone="violet"
             title="Začetek projekta"
-            meta={new Date(project.created_at).toLocaleDateString("sl-SI", {
+            meta={formatDate(project.created_at, {
               weekday: "long",
               day: "numeric",
               month: "long",
@@ -444,7 +432,7 @@ function EntryCard({
               dateTime={entry.created_at}
               className="font-semibold tabular-nums text-gray-700 dark:text-gray-300"
             >
-              {timeOf(entry.created_at)}
+              {formatTime(entry.created_at)}
             </time>
             <span suppressHydrationWarning className="text-gray-400">
               {relative(entry.created_at)}

@@ -7,6 +7,7 @@ import { projectColor } from "@/lib/utils/color";
 import type { NabavaCategory, NabavaItem } from "@/lib/types/database.types";
 import type { NabavaProject } from "@/lib/data/nabava";
 import {
+  addItemToVzletAction,
   clearBoughtAction,
   deleteCategoryAction,
   renameCategoryAction,
@@ -20,10 +21,12 @@ import NabavaItemDialog, {
   type Priority,
 } from "@/components/nabava/NabavaItemDialog";
 import {
+  IconCheck,
   IconChevronDown,
   IconChevronRight,
   IconExternalLink,
   IconPlus,
+  IconRocket,
 } from "@/components/ui/icons";
 
 type Dialog =
@@ -100,6 +103,24 @@ export default function NabavaList({
         setError(res.error);
         setToggled((t) => ({ ...t, [item.id]: !value }));
       }
+    });
+  };
+
+  // izdelki, ki so bili v tej seji že dodani v Vzlet (kljukica namesto rakete)
+  const [sentToVzlet, setSentToVzlet] = useState<Set<string>>(new Set());
+  const addToVzlet = (item: NabavaItem) => {
+    if (sentToVzlet.has(item.id) && !confirm("Ta izdelek je že v Vzletu. Ga dodam še enkrat?"))
+      return;
+    setSentToVzlet((s) => new Set(s).add(item.id));
+    startTransition(async () => {
+      const res = await addItemToVzletAction(item.id);
+      setError(res.error ?? null);
+      if (res.error)
+        setSentToVzlet((s) => {
+          const next = new Set(s);
+          next.delete(item.id);
+          return next;
+        });
     });
   };
 
@@ -215,6 +236,8 @@ export default function NabavaList({
                 project={projectOf(item.project_id)}
                 onToggle={(v) => toggle(item, v)}
                 onEdit={() => setDialog({ kind: "edit", item })}
+                onVzlet={() => addToVzlet(item)}
+                inVzlet={sentToVzlet.has(item.id)}
               />
             ))}
           </ul>
@@ -297,6 +320,8 @@ function ItemRow({
   bought,
   onToggle,
   onEdit,
+  onVzlet,
+  inVzlet,
 }: {
   item: NabavaItem;
   /** projekt, ki mu izdelek pripada (oznaka) */
@@ -304,6 +329,9 @@ function ItemRow({
   bought?: boolean;
   onToggle: (bought: boolean) => void;
   onEdit: () => void;
+  /** doda „Kupi: …“ med opravila v Vzletu (samo nekupljeni izdelki) */
+  onVzlet?: () => void;
+  inVzlet?: boolean;
 }) {
   return (
     <li className="flex items-center gap-3 px-3 py-2.5">
@@ -389,6 +417,22 @@ function ItemRow({
             ))
           }
         </Menu>
+      )}
+      {onVzlet && (
+        <button
+          type="button"
+          onClick={onVzlet}
+          aria-label="Dodaj v Vzlet"
+          title={inVzlet ? "Dodano v Vzlet" : `Dodaj v Vzlet: „Kupi: ${item.name}“`}
+          className={clsx(
+            "flex-shrink-0 rounded p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800",
+            inVzlet
+              ? "text-emerald-600 dark:text-emerald-400"
+              : "text-gray-500 hover:text-violet-600 dark:text-gray-400 dark:hover:text-violet-400"
+          )}
+        >
+          {inVzlet ? <IconCheck /> : <IconRocket />}
+        </button>
       )}
     </li>
   );

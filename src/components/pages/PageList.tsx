@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { TIME_ZONE } from "@/lib/utils/dates";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import clsx from "@/lib/utils/clsx";
@@ -29,6 +30,7 @@ const OPEN_NOTEBOOK_NAV_EVENT = "pisi:open-notebook-nav";
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("sl-SI", {
+    timeZone: TIME_ZONE,
     day: "numeric",
     month: "short",
     year: "numeric",

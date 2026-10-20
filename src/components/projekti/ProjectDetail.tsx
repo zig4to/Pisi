@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useTransition, type ReactNode } from "react";
+import { TIME_ZONE } from "@/lib/utils/dates";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import clsx from "@/lib/utils/clsx";
@@ -383,7 +384,7 @@ function Steps({
               {step.title}
               {step.vzlet_added_at && (
                 <span
-                  title={`Dodano v Vzlet ${new Date(step.vzlet_added_at).toLocaleDateString("sl-SI")}`}
+                  title={`Dodano v Vzlet ${new Date(step.vzlet_added_at).toLocaleDateString("sl-SI", { timeZone: TIME_ZONE })}`}
                   className="ml-2 inline-flex items-center gap-1 rounded-full bg-sky-100 px-1.5 py-0.5 align-middle text-[10px] font-semibold text-sky-700 no-underline dark:bg-sky-950 dark:text-sky-300"
                 >
                   <IconRocket className="h-3 w-3" />

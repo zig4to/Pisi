@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
+import { TIME_ZONE } from "@/lib/utils/dates";
 import type { TrashItem, TrashKind } from "@/lib/types/database.types";
 import {
   deleteForeverAction,
@@ -57,7 +58,7 @@ export default function TrashList({ items }: { items: TrashItem[] }) {
               <p className="text-xs text-gray-400">
                 {KIND_LABEL[item.kind]}
                 {item.context ? ` · ${item.context}` : ""} ·{" "}
-                {new Date(item.deleted_at).toLocaleDateString("sl-SI")}
+                {new Date(item.deleted_at).toLocaleDateString("sl-SI", { timeZone: TIME_ZONE })}
               </p>
             </div>
             <button

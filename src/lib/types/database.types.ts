@@ -444,6 +444,7 @@ export type Database = {
           title: string;
           position: number;
           project_step_id: string | null;
+          nabava_item_id: string | null;
           created_at: string;
         };
         Insert: {
@@ -452,11 +453,13 @@ export type Database = {
           title: string;
           position?: number;
           project_step_id?: string | null;
+          nabava_item_id?: string | null;
         };
         Update: {
           title?: string;
           position?: number;
           project_step_id?: string | null;
+          nabava_item_id?: string | null;
         };
       };
       pisi_project_images: {

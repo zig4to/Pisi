@@ -33,6 +33,9 @@ export default function RootLayout({
       className={`${rubik.variable} h-full overflow-x-hidden antialiased`}
     >
       <head>
+        {/* Imamo svojo temno temo — Dark Reader naj strani ne spreminja (sicer
+            vrine atribute v HTML in React javi napako hidracije). */}
+        <meta name="darkreader-lock" />
         <ThemeScript />
         <SsoPrepaintScript />
       </head>
