@@ -36,7 +36,7 @@ export default function NabavaItemDialog({
   categoryId,
   categories,
   stores,
-  urgent: urgentDefault = true,
+  urgent: urgentDefault = false,
   projectId,
 }: {
   onClose: () => void;

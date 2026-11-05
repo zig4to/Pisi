@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, type MouseEvent } from "react";
+import { Fragment, useState, useTransition, type MouseEvent } from "react";
 import Link from "next/link";
 import clsx from "@/lib/utils/clsx";
 import { projectColor } from "@/lib/utils/color";
@@ -61,8 +61,7 @@ export default function NabavaList({
     !projectId && id ? (projects.find((p) => p.id === id) ?? null) : null;
   const [dialog, setDialog] = useState<Dialog>(null);
   const [rename, setRename] = useState<NabavaCategory | null>(null);
-  // v projektu so vsi izdelki na enem seznamu
-  const [tab, setTab] = useState<Tab>(projectId ? "all" : "urgent");
+  const [tab, setTab] = useState<Tab>("all");
   const [showBought, setShowBought] = useState(false);
   // takoj skrij odkljukane, preden strežnik osveži seznam
   const [toggled, setToggled] = useState<Record<string, boolean>>({});
@@ -229,16 +228,20 @@ export default function NabavaList({
           </div>
 
           <ul className="divide-y divide-gray-100 rounded-lg border border-gray-200 bg-white dark:divide-gray-800 dark:border-gray-800 dark:bg-gray-900">
-            {g.items.map((item) => (
-              <ItemRow
-                key={item.id}
-                item={item}
-                project={projectOf(item.project_id)}
-                onToggle={(v) => toggle(item, v)}
-                onEdit={() => setDialog({ kind: "edit", item })}
-                onVzlet={() => addToVzlet(item)}
-                inVzlet={sentToVzlet.has(item.id)}
-              />
+            {byProject(g.items, projectOf).map(({ project, items: rows }) => (
+              <Fragment key={project?.id ?? "none"}>
+                {project && <ProjectHeader project={project} />}
+                {rows.map((item) => (
+                  <ItemRow
+                    key={item.id}
+                    item={item}
+                    onToggle={(v) => toggle(item, v)}
+                    onEdit={() => setDialog({ kind: "edit", item })}
+                    onVzlet={() => addToVzlet(item)}
+                    inVzlet={sentToVzlet.has(item.id)}
+                  />
+                ))}
+              </Fragment>
             ))}
           </ul>
         </section>
@@ -273,15 +276,19 @@ export default function NabavaList({
           </div>
           {showBought && (
             <ul className="divide-y divide-gray-100 rounded-lg border border-gray-200 bg-white opacity-70 dark:divide-gray-800 dark:border-gray-800 dark:bg-gray-900">
-              {bought.map((item) => (
-                <ItemRow
-                  key={item.id}
-                  item={item}
-                  project={projectOf(item.project_id)}
-                  bought
-                  onToggle={(v) => toggle(item, v)}
-                  onEdit={() => setDialog({ kind: "edit", item })}
-                />
+              {byProject(bought, projectOf).map(({ project, items: rows }) => (
+                <Fragment key={project?.id ?? "none"}>
+                  {project && <ProjectHeader project={project} />}
+                  {rows.map((item) => (
+                    <ItemRow
+                      key={item.id}
+                      item={item}
+                      bought
+                      onToggle={(v) => toggle(item, v)}
+                      onEdit={() => setDialog({ kind: "edit", item })}
+                    />
+                  ))}
+                </Fragment>
               ))}
             </ul>
           )}
@@ -295,7 +302,7 @@ export default function NabavaList({
           categoryId={dialog.kind === "new" ? dialog.categoryId : undefined}
           categories={categories}
           stores={stores}
-          urgent={tab !== "normal"}
+          urgent={tab === "urgent"}
           projectId={projectId}
         />
       )}
@@ -314,9 +321,44 @@ export default function NabavaList({
   );
 }
 
+/** izdelki brez projekta najprej, nato po projektih (po imenu) */
+function byProject(
+  items: NabavaItem[],
+  projectOf: (id: string | null) => NabavaProject | null
+) {
+  const groups = new Map<string, { project: NabavaProject | null; items: NabavaItem[] }>();
+  for (const item of items) {
+    const project = projectOf(item.project_id);
+    const key = project?.id ?? "";
+    if (!groups.has(key)) groups.set(key, { project, items: [] });
+    groups.get(key)!.items.push(item);
+  }
+  return [...groups.values()].sort((a, b) =>
+    !a.project ? -1 : !b.project ? 1 : a.project.title.localeCompare(b.project.title, "sl")
+  );
+}
+
+/** naslov projekta nad njegovimi izdelki (celo ime, se lahko prelomi) */
+function ProjectHeader({ project }: { project: NabavaProject }) {
+  return (
+    <li className="bg-gray-50 px-3 py-1.5 dark:bg-gray-800/50">
+      <Link
+        href={`/projekti/${project.id}`}
+        className="flex items-start gap-2 text-xs font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100"
+      >
+        <span
+          aria-hidden
+          className="mt-1 h-2 w-2 flex-shrink-0 rounded-full"
+          style={{ backgroundColor: projectColor(project) }}
+        />
+        <span className="break-words">{project.title}</span>
+      </Link>
+    </li>
+  );
+}
+
 function ItemRow({
   item,
-  project,
   bought,
   onToggle,
   onEdit,
@@ -324,8 +366,6 @@ function ItemRow({
   inVzlet,
 }: {
   item: NabavaItem;
-  /** projekt, ki mu izdelek pripada (oznaka) */
-  project: NabavaProject | null;
   bought?: boolean;
   onToggle: (bought: boolean) => void;
   onEdit: () => void;
@@ -359,20 +399,6 @@ function ItemRow({
           </span>
         )}
       </button>
-      {project && (
-        <Link
-          href={`/projekti/${project.id}`}
-          title={`Projekt: ${project.title}`}
-          className="flex max-w-32 flex-shrink-0 items-center gap-1.5 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-        >
-          <span
-            aria-hidden
-            className="h-2 w-2 flex-shrink-0 rounded-full"
-            style={{ backgroundColor: projectColor(project) }}
-          />
-          <span className="truncate">{project.title}</span>
-        </Link>
-      )}
       {item.urls.length === 1 && (
         <a
           href={item.urls[0]}
