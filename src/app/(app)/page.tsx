@@ -2,6 +2,7 @@ import Link from "next/link";
 import {
   IconBook,
   IconFolderKanban,
+  IconMove,
   IconPackageSearch,
   IconShoppingCart,
 } from "@/components/ui/icons";
@@ -129,6 +130,21 @@ export default function HomePage() {
               </span>
               <span className="text-xs text-gray-500 dark:text-gray-400">
                 Kaj delam in kaj sem dokončal
+              </span>
+            </Link>
+
+            <Link
+              href="/posodil-sem"
+              className="group flex flex-col items-center gap-2 rounded-xl border border-rose-200 bg-rose-50/60 px-4 py-5 text-center transition-colors hover:border-rose-300 hover:bg-rose-50 dark:border-rose-900 dark:bg-rose-950/40 dark:hover:border-rose-800 dark:hover:bg-rose-950"
+            >
+              <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-rose-600 text-white">
+                <IconMove className="h-5 w-5" />
+              </span>
+              <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                Posodil sem
+              </span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                Kaj sem komu posodil
               </span>
             </Link>
           </div>
